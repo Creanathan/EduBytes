@@ -35,13 +35,6 @@ const Game = {
             };
         });
 
-        document.querySelectorAll("[data-item]").forEach(el=>{
-            el.onclick = () => {
-                this.takeItem(el.dataset.item);
-                el.remove();
-            };
-        });
-
     },
 
 };
