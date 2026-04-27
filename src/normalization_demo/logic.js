@@ -8,7 +8,8 @@ const DEFAULT_DATA = [
     { log_id: "#001", officer: "Off. Miller", searched_rooms: "Kitchen" },
     { log_id: "#002", officer: "Det. Louis", searched_rooms: "Nursery, Living Room, Hallway" },
     { log_id: "#003", officer: "Off. Hayes", searched_rooms: "Study, Master Bedroom" },
-    { log_id: "#004", officer: "Sgt. Cross", searched_rooms: "Bathroom" }
+    { log_id: "#004", officer: "Sgt. Cross", searched_rooms: "Bathroom" },
+    { log_id: "#005", officer: "Off. Miller", searched_rooms: "Piano (Nanny Key Missing!)" }
 ];
 
 // Load saved data or use default
@@ -87,6 +88,12 @@ function triggerSuccessState() {
     if (isUnlocked) return;
     isUnlocked = true;
     localStorage.setItem('police_os_unlocked', 'true');
+    
+    // Notify parent game that normalization is complete
+    if (window !== window.parent) {
+        window.parent.postMessage({ type: 'normalization_complete' }, '*');
+    }
+    
     showSuccessUI();
 }
 
@@ -99,7 +106,19 @@ function showSuccessUI() {
     const success = document.getElementById("success-banner");
     if (success) success.style.display = "flex";
 
-    // UI Update 3: Neon Green Table Borders
+    // UI Update 3: Neon Green Table Borders & Highlight Clue
     const table = document.getElementById("police-db");
-    if (table) table.classList.add("success-glow");
+    if (table) {
+        table.classList.add("success-glow");
+        
+        // Find the Nanny Key clue and highlight it
+        const rows = table.querySelectorAll("tbody tr");
+        rows.forEach(row => {
+            if (row.innerText.includes("Nanny Key Missing")) {
+                row.style.background = "rgba(200, 134, 10, 0.2)";
+                row.style.border = "1px solid #c8860a";
+                row.title = "CRITICAL CLUE DECRYPTED";
+            }
+        });
+    }
 }

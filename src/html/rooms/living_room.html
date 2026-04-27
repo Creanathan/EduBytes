@@ -7,12 +7,13 @@
     <link rel="stylesheet" href="../../css/rooms.css">
     <style>
         .room-background { 
-            background-image: url('../../assets/rooms/living_room_closed.png'); 
-            transition: background-image 0.5s ease-in-out;
+            background-image: url('../../assets/rooms/Gemini_Generated_Image_toe8qrtoe8qrtoe8.png'); 
         }
-        #obj-piano  { top: 38%; left: 55%; width: 40%; height: 45%; }
-        #obj-door   { top: 25%; left: 42%; width: 14%; height: 35%; }
-        #obj-thomas { top: 35%; left: 30%; width: 15%; height: 58%; }
+        
+        /* Hitboxes for the wide image (transformed from square-relative coordinates) */
+        #obj-piano  { top: 38%; left: 52.8%; width: 22.3%; height: 45%; }
+        #obj-door   { top: 25%; left: 45.5%; width: 7.8%; height: 35%; }
+        #obj-thomas { top: 35%; left: 38.8%; width: 8.4%; height: 58%; }
     </style>
 </head>
 <body>
@@ -27,33 +28,40 @@
 
 <div id="dialog-container"></div>
 
-<!-- Navigation — per Interacties met locaties.docx -->
-<!-- Right → Hallway (always open) -->
-<button class="btn btn-primary ui-button position-fixed top-50 end-0 translate-middle-y me-3"
-        id="btn-right" onclick="goToLocation('hallway.html')">></button>
+    <!-- Right → Hallway (always open) -->
+    <button class="btn btn-primary ui-button position-fixed top-50 end-0 translate-middle-y me-3"
+            id="btn-right" onclick="goToLocation('hallway.html')"></button>
 
-<!-- Small Up button near door → Nanny's Room (requires nannys_key) -->
-<!-- Positioned near the center background door area -->
-<button class="btn btn-secondary ui-button position-fixed"
-        id="btn-top"
-        style="display: none; top: 20%; left: 44.5%; width: 36px; height: 36px; font-size: 0.9rem;"
-        onclick="goToLocation('nannys_room.html', 'nannys_key')">^</button>
+    <!-- Small Up button near door → Nanny's Room (requires nannys_key) -->
+    <button class="btn btn-secondary ui-button position-fixed"
+            id="btn-top"
+            style="display: none; top: 20%; left: 48%;"
+            onclick="goToLocation('nannys_room.html', 'nannys_key')"></button>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         // Persistence: Check if door was already unlocked
         if (window.GameState && window.GameState.hasFlag('nannys_room_unlocked')) {
-            const bg = document.querySelector('.room-background');
-            if (bg) bg.style.backgroundImage = "url('../../assets/rooms/living_room_open.png')";
-            
-            const btn = document.getElementById('btn-top');
-            if (btn) btn.style.display = 'flex';
-
-            // Hide the door hitbox since it's already open
-            const doorHitbox = document.getElementById('obj-door');
-            if (doorHitbox) doorHitbox.style.display = 'none';
+            updateRoomToOpenState();
         }
     });
+
+    function updateRoomToOpenState() {
+        const bg = document.querySelector('.room-background');
+        if (bg) {
+            bg.style.backgroundImage = "url('../../assets/rooms/Gemini_Generated_Image_iyo8huiyo8huiyo8.png')";
+        }
+        
+        const btn = document.getElementById('btn-top');
+        if (btn) btn.style.display = 'flex';
+
+        // Hide the door hitbox since it's already open
+        const doorHitbox = document.getElementById('obj-door');
+        if (doorHitbox) doorHitbox.style.display = 'none';
+
+        // Notify responsive scaler to re-sync with new background
+        if (window.ResponsiveScaler) window.ResponsiveScaler.sync();
+    }
 
     function handleDoorClick() {
         if (window.Inventory && window.Inventory.hasItem('nannys_key')) {
@@ -65,6 +73,7 @@
 </script>
 
 <script src="../../js/services/gamestate.js"></script>
+<script src="../../js/services/routing_guard.js"></script>
 <script src="../../js/services/responsive.js"></script>
 <script src="../../js/components/device_block.js"></script>
 <script src="../../js/components/movement.js"></script>

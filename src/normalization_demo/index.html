@@ -8,91 +8,71 @@
 </head>
 <body>
 
-    <!-- Android Tablet Shell -->
-    <div class="tablet-shell">
-
-        <!-- Top Bezel with Camera -->
-        <div class="tablet-bezel-top">
-            <div class="tablet-camera"></div>
+    <!-- Android Status Bar -->
+    <div class="android-statusbar">
+        <div class="statusbar-left">
+            <span>POLICE OS v2.1</span>
+            <div class="status-dot"></div>
+            <span>SECURE CONNECTION</span>
         </div>
+        <div class="statusbar-right">
+            <span id="status-time">--:--</span>
+        </div>
+    </div>
 
-        <!-- The Screen -->
-        <div class="tablet-screen">
-
-            <!-- Android Status Bar -->
-            <div class="android-statusbar">
-                <div class="statusbar-left">
-                    <span>POLICE OS v2.1</span>
-                    <div class="status-dot"></div>
-                    <span>SECURE</span>
-                </div>
-                <div class="statusbar-right">
-                    <span id="status-time">--:--</span>
-                    <span>⬛⬛⬛</span>
-                </div>
+    <!-- App Header -->
+    <div class="app-header">
+        <div class="app-logo">
+            <div class="app-logo-icon">🔍</div>
+            <div>
+                <div class="app-title">Police OS</div>
+                <div class="app-subtitle">Case #4412 · Normalization Protocol</div>
             </div>
+        </div>
+        <button class="exit-btn" onclick="closeTablet()">
+            EXIT
+        </button>
+    </div>
 
-            <!-- App Header -->
-            <div class="app-header">
-                <div class="app-logo">
-                    <div class="app-logo-icon">🔍</div>
-                    <div>
-                        <div class="app-title">Police OS</div>
-                        <div class="app-subtitle">Case #4412 · Mansion Investigation</div>
-                    </div>
-                </div>
-                <button class="back-btn" onclick="closeTablet()">
-                    ← Exit App
-                </button>
-            </div>
-
-            <!-- Error Banner (1NF Violation) -->
-            <div id="error-banner" class="error-banner">
-                <div class="error-icon">⚠</div>
-                <div>
-                    <div class="error-title">[SYS_ERR_1NF] Database integrity violation</div>
-                    <div>Multiple values detected in atomic cells. Tap corrupted entries to resolve.</div>
-                </div>
-            </div>
-
-            <!-- Database Section -->
-            <div class="db-section">
-                <div class="db-label">📋 Search Logs · Evidence Database</div>
-
-                <table id="police-db">
-                    <thead>
-                        <tr>
-                            <th>Log_ID</th>
-                            <th>Officer</th>
-                            <th>Searched_Rooms</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Populated via logic.js -->
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Success Banner (Hidden by default) -->
-            <div id="success-banner" class="success-banner" style="display: none;">
-                <div class="success-icon">✓</div>
-                <div>
-                    <div class="success-title">Database Integrity Secured</div>
-                    <div>1NF Normalization achieved. Case file decrypted.</div>
-                    <button class="btn-continue" onclick="closeTablet()">Close Tablet</button>
-                </div>
-            </div>
-
-        </div><!-- /tablet-screen -->
-
-        <!-- Bottom Bezel with Home Button -->
-        <div class="tablet-bezel-bottom">
-            <div class="tablet-home-btn" onclick="closeTablet()" title="Home">
-                <div style="width:12px;height:12px;border:2px solid #3a3a45;border-radius:3px;"></div>
+    <!-- Main Content Area -->
+    <main class="content-area">
+        <!-- Error Banner (1NF Violation) -->
+        <div id="error-banner" class="error-banner">
+            <div class="error-icon">⚠</div>
+            <div>
+                <div class="error-title">1NF Integrity Fault</div>
+                <div>Atomic cell violation detected. Tap corrupted entries to split rows and normalize data.</div>
             </div>
         </div>
 
-    </div><!-- /tablet-shell -->
+        <!-- Database Section -->
+        <div class="db-section">
+            <div class="db-label">DATABASE: Search_Log_Registry</div>
+
+            <table id="police-db">
+                <thead>
+                    <tr>
+                        <th>Log_ID</th>
+                        <th>Officer</th>
+                        <th>Searched_Rooms</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Populated via logic.js -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Success Banner -->
+        <div id="success-banner" class="success-banner" style="display: none;">
+            <div class="success-icon">✓</div>
+            <div>
+                <div class="success-title">Normalization Success</div>
+                <div>1NF compliance reached. Case file updated in registry.</div>
+                <button class="btn-continue" onclick="closeTablet()">Close Tablet</button>
+            </div>
+        </div>
+    </main>
 
     <script src="logic.js"></script>
     <script>

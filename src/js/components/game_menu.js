@@ -9,6 +9,9 @@
 
 (function () {
     function buildGameMenu() {
+        // 0. Safeguard: Prevent multiple initializations
+        if (document.getElementById('game-menu-wrap')) return;
+
         // 1. Inject Styles
         const style = document.createElement('style');
         style.textContent = `
@@ -152,6 +155,97 @@
                 border-color: rgba(192, 57, 43, 0.5);
                 color: #e74c3c;
             }
+
+            /* Custom Restart Modal Styles */
+            #restart-modal-overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.7);
+                backdrop-filter: blur(4px);
+                z-index: 20000;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+
+            #restart-modal-overlay.active {
+                display: flex;
+                opacity: 1;
+            }
+
+            .restart-modal {
+                background: #0a0a0f;
+                border: 2px solid #c8860a;
+                border-radius: 16px;
+                padding: 30px;
+                max-width: 400px;
+                width: 90%;
+                text-align: center;
+                box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+                transform: scale(0.9);
+                transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            }
+
+            #restart-modal-overlay.active .restart-modal {
+                transform: scale(1);
+            }
+
+            .restart-modal h2 {
+                color: #c8860a;
+                margin-top: 0;
+                font-size: 20px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+            }
+
+            .restart-modal p {
+                color: #ccc;
+                font-size: 14px;
+                line-height: 1.6;
+                margin: 20px 0 30px;
+            }
+
+            .modal-actions {
+                display: flex;
+                gap: 15px;
+                justify-content: center;
+            }
+
+            .modal-btn {
+                padding: 10px 24px;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s;
+                border: none;
+                min-width: 100px;
+            }
+
+            .btn-cancel {
+                background: #222;
+                color: #eee;
+                border: 1px solid #444;
+            }
+
+            .btn-cancel:hover {
+                background: #333;
+                border-color: #666;
+            }
+
+            .btn-confirm {
+                background: #e74c3c;
+                color: #fff;
+                box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+            }
+
+            .btn-confirm:hover {
+                background: #c0392b;
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+            }
         `;
         document.head.appendChild(style);
 
@@ -180,6 +274,21 @@
         `;
         document.body.appendChild(wrap);
 
+        // Build Custom Modal DOM
+        const modalOverlay = document.createElement('div');
+        modalOverlay.id = 'restart-modal-overlay';
+        modalOverlay.innerHTML = `
+            <div class="restart-modal">
+                <h2>Restart Investigation?</h2>
+                <p>Are you sure you want to restart? All your progress in the investigation will be lost forever.</p>
+                <div class="modal-actions">
+                    <button class="modal-btn btn-cancel" id="modal-cancel">Cancel</button>
+                    <button class="modal-btn btn-confirm" id="modal-confirm">Restart</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modalOverlay);
+
         // 3. Logic
         const btn = document.getElementById('hamburger-btn');
         const dropdown = document.getElementById('menu-dropdown');
@@ -189,32 +298,43 @@
         const muteBtn = document.getElementById('mute-btn');
         const restartBtn = document.getElementById('restart-btn');
 
-        // Restart Logic (Moved up for priority)
+        const modalCancel = document.getElementById('modal-cancel');
+        const modalConfirm = document.getElementById('modal-confirm');
+
+        function closeMenu() {
+            btn.classList.remove('active');
+            dropdown.classList.remove('open');
+            audioPanel.classList.remove('open');
+        }
+
+        // Restart Logic
         if (restartBtn) {
             restartBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 
-                console.log("Restart requested...");
-                const confirmed = confirm("Are you sure you want to restart your investigation? All progress will be lost.");
+                // Close menu first
+                closeMenu();
                 
-                if (confirmed) {
-                    console.log("Clearing localStorage and redirecting...");
-                    localStorage.clear();
-                    
-                    // Most robust pathing: Replace the current filename with outside.html
-                    let url = window.top.location.href.split('?')[0].split('#')[0];
-                    if (url.endsWith('/')) url = url.slice(0, -1);
-                    
-                    const parts = url.split('/');
-                    parts[parts.length - 1] = 'outside.html';
-                    const targetURL = parts.join('/');
-                    
-                    console.log("Restarting to:", targetURL);
-                    window.top.location.href = targetURL;
-                }
+                // Show custom modal
+                modalOverlay.classList.add('active');
             });
         }
+
+        modalCancel.addEventListener('click', (e) => {
+            e.stopPropagation();
+            modalOverlay.classList.remove('active');
+        });
+
+        modalConfirm.addEventListener('click', () => {
+            console.log("Clearing localStorage and restarting...");
+            localStorage.clear();
+            
+            // Redirect to outside.html (robust relative path)
+            const currentPath = window.location.pathname;
+            const dir = currentPath.substring(0, currentPath.lastIndexOf('/'));
+            window.top.location.href = dir + '/outside.html';
+        });
 
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -242,7 +362,8 @@
             }
         });
 
-        muteBtn.addEventListener('click', () => {
+        muteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
             if (window.AudioEngine) {
                 const newState = !window.AudioEngine.isMuted();
                 window.AudioEngine.setMuted(newState);
@@ -257,14 +378,21 @@
         }
 
         // Close on outside click
-        document.addEventListener('click', () => {
-            btn.classList.remove('active');
-            dropdown.classList.remove('open');
-            audioPanel.classList.remove('open');
+        document.addEventListener('click', (e) => {
+            // Don't close if clicking inside the modal
+            if (modalOverlay.classList.contains('active')) return;
+            
+            closeMenu();
         });
 
         dropdown.addEventListener('click', e => e.stopPropagation());
     }
 
-    document.addEventListener('DOMContentLoaded', buildGameMenu);
+    // Use a more robust check for DOM ready
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        buildGameMenu();
+    } else {
+        document.addEventListener('DOMContentLoaded', buildGameMenu);
+    }
 })();
+

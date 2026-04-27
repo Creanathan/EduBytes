@@ -102,14 +102,14 @@
                 justify-content: center;
                 background: rgba(0, 0, 0, 0);
                 backdrop-filter: blur(0px) brightness(1);
-                transition: background 0.5s ease, backdrop-filter 0.5s ease;
+                transition: background 0.6s ease, backdrop-filter 0.6s ease;
                 pointer-events: none;
                 opacity: 0;
             }
 
             #tablet-overlay.active {
-                background: rgba(0, 0, 0, 0.6);
-                backdrop-filter: blur(5px) brightness(0.4);
+                background: rgba(0, 0, 10, 0.7);
+                backdrop-filter: blur(12px) brightness(0.3);
                 pointer-events: all;
                 opacity: 1;
             }
@@ -118,27 +118,120 @@
                 /* FIXED INTERNAL SIZE */
                 width: 860px;
                 height: 640px;
-                transform: translateY(100vh) scale(1);
-                transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+                transform: translateY(100vh) scale(0.8) rotateX(10deg);
+                transition: transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
                 display: flex;
                 flex-direction: column;
-                box-shadow: 0 10px 60px rgba(0,0,0,0.8);
-                border-radius: 24px;
+                
+                /* Premium Bezel: Brushed Metal / Matte Noir */
+                background: linear-gradient(145deg, #1e1e24 0%, #111116 100%);
+                padding: 40px 24px;
+                border-radius: 38px;
+                border: 1px solid rgba(255,255,255,0.08);
+                box-shadow: 
+                    0 30px 100px rgba(0,0,0,0.95),
+                    0 0 0 1px rgba(0,0,0,0.8),
+                    inset 0 1px 2px rgba(255,255,255,0.15);
+                position: relative;
                 overflow: hidden;
-                background: #000;
-                transform-origin: center center;
+                transform-origin: center bottom;
+                perspective: 1000px;
+            }
+
+            /* Screen Glare Layer */
+            .tablet-container::after {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: linear-gradient(
+                    45deg,
+                    transparent 45%,
+                    rgba(255, 255, 255, 0.03) 48%,
+                    rgba(255, 255, 255, 0.06) 50%,
+                    rgba(255, 255, 255, 0.03) 52%,
+                    transparent 55%
+                );
+                pointer-events: none;
+                z-index: 20;
+                transform: rotate(-15deg);
+                opacity: 0.6;
+            }
+
+            /* Camera & Speaker Grille Detail */
+            .tablet-bezel-details-top {
+                position: absolute;
+                top: 16px;
+                left: 50%;
+                transform: translateX(-50%);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .tablet-lens {
+                width: 10px;
+                height: 10px;
+                background: radial-gradient(circle at 30% 30%, #3a4a5a, #050508);
+                border-radius: 50%;
+                box-shadow: 
+                    0 0 0 1px #000,
+                    inset 0 0 5px rgba(0,0,0,1);
+            }
+
+            .tablet-speaker {
+                width: 40px;
+                height: 3px;
+                background: #08080a;
+                border-radius: 4px;
+                border: 1px solid rgba(255,255,255,0.05);
+                box-shadow: inset 0 1px 2px #000;
+            }
+
+            /* Home Button / Indicator Detail */
+            .tablet-home-btn {
+                position: absolute;
+                bottom: 12px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 50px;
+                height: 16px;
+                background: #0a0a0f;
+                border: 1px solid #252530;
+                border-radius: 8px;
+                box-shadow: 
+                    inset 0 2px 4px rgba(0,0,0,0.8),
+                    0 1px 0 rgba(255,255,255,0.05);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .tablet-home-indicator {
+                width: 14px;
+                height: 2px;
+                background: rgba(200, 134, 10, 0.4);
+                border-radius: 2px;
+                box-shadow: 0 0 8px rgba(200, 134, 10, 0.2);
             }
 
             #tablet-overlay.active .tablet-container {
                 /* Will be overwritten by JS scaling */
-                transform: translateY(0) scale(1);
+                transform: translateY(0) scale(1) rotateX(0deg);
             }
 
             #tablet-iframe {
                 width: 100%;
                 height: 100%;
-                border: none;
-                background: transparent;
+                border: 1px solid #000;
+                background: #000;
+                border-radius: 6px;
+                box-shadow: 0 0 40px rgba(0,0,0,0.8);
+                position: relative;
+                z-index: 5;
             }
         `;
         document.head.appendChild(style);
@@ -168,6 +261,11 @@
             if (event.data.type === 'closeTablet') {
                 hideTabletOverlay();
                 updateNotification();
+            } else if (event.data.type === 'normalization_complete') {
+                console.log("[Narrative] Normalization 1NF achieved. Setting game flag.");
+                if (window.GameState) {
+                    window.GameState.setFlag('database_normalized');
+                }
             }
         });
 
@@ -215,7 +313,14 @@
             overlay.id = 'tablet-overlay';
             overlay.innerHTML = `
                 <div class="tablet-container">
+                    <div class="tablet-bezel-details-top">
+                        <div class="tablet-speaker"></div>
+                        <div class="tablet-lens"></div>
+                    </div>
                     <iframe id="tablet-iframe" frameborder="0"></iframe>
+                    <div class="tablet-home-btn">
+                        <div class="tablet-home-indicator"></div>
+                    </div>
                 </div>
             `;
             document.body.appendChild(overlay);
@@ -223,9 +328,13 @@
 
         // Set source and show
         const iframe = document.getElementById('tablet-iframe');
-        // Relative path calculation
-        const isRoom = window.location.href.includes('/rooms/');
-        iframe.src = isRoom ? "../../normalization_demo/index.html" : "../normalization_demo/index.html";
+        
+        // Robust pathing: find the root by splitting at 'src/'
+        const currentURL = window.location.href;
+        const rootURL = currentURL.split('/src/')[0];
+        // Adding a trailing slash to ensure relative assets (style.css, logic.js) 
+        // inside the iframe resolve correctly in hosted environments.
+        iframe.src = rootURL + "/src/normalization_demo/";
         
         // Trigger animation
         setTimeout(() => {
@@ -250,5 +359,10 @@
         }
     }
 
-    document.addEventListener('DOMContentLoaded', buildTabletWidget);
+    // Self-start or wait for DOM
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        buildTabletWidget();
+    } else {
+        document.addEventListener('DOMContentLoaded', buildTabletWidget);
+    }
 })();

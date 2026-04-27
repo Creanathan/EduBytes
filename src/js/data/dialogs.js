@@ -26,6 +26,9 @@ const DIALOGS = {
                 "You arrive at the Souvellier estate. The iron gate creaks open.",
                 "A cold breeze sweeps across the gravel path leading to the front door.",
                 "Time to begin the investigation."
+            ],
+            options: [
+                { label: "Proceed", action: "showBtn:btn-top|exit" }
             ]
         }
     ],
@@ -47,7 +50,8 @@ const DIALOGS = {
                 "The air in here is heavy... colder than the rest of the house.",
                 "And there she is. Amelia Souvellier. Found earlier this morning by the butler.",
                 "I need to be careful. Every misplaced footprint could cost us the case.",
-                "Time to look for anything the police might have missed."
+                "Wait, the local police logs on this desk are a mess... they've crammed multiple searches into single entries.",
+                "I'll need to use my tablet to Normalize this data before I can find any useful patterns."
             ],
             options: [
                 { label: "Investigate", action: "setFlag:crime_scene_visited|exit" }
@@ -227,24 +231,53 @@ const DIALOGS = {
             options: [{ label: "Close", action: "exit" }]
         },
 
-        piano: {
-            speaker: "Det. Louis Dekoning",
-            lines: ["I shouldn't waste any time playing a tune. There is a murderer on the loose."],
-            options: [{ label: "Close", action: "exit" }]
-        },
+        piano: [
+            {
+                // STATE 1: Database normalized, find the key
+                condition: "GameState.hasFlag('database_normalized') && !GameState.hasFlag('has_nannys_key')",
+                speaker: "Det. Louis Dekoning",
+                lines: [
+                    "The tablet log said Off. Miller noted a missing key here.",
+                    "Let's see... behind the lower octaves...",
+                    "Aha! A small silver key with a 'N' engraved on it. This must be it."
+                ],
+                options: [
+                    { label: "Take Key", action: "setFlag:has_nannys_key|addItem:nannys_key|exit" }
+                ]
+            },
+            {
+                // STATE 2: Default state or already found
+                condition: "true",
+                speaker: "Det. Louis Dekoning",
+                lines: ["I shouldn't waste any time playing a tune. There is a murderer on the loose."],
+                options: [{ label: "Close", action: "exit" }]
+            }
+        ],
 
         // Door in Living Room — leads to Nanny's Room
-        door_nannys_room: {
-            speaker: "Det. Louis Dekoning",
-            lines: ["Locked. Best to ask for a key later."],
-            options: [{ label: "Close", action: "exit" }]
-        },
+        door_nannys_room: [
+            {
+                condition: "GameState.hasFlag('has_nannys_key')",
+                speaker: "Det. Louis Dekoning",
+                lines: ["The Nanny's room. I have the key.", "The door is now open."],
+                options: [
+                    { label: "Enter", action: "setFlag:nannys_room_unlocked|goTo:nannys_room.html" },
+                    { label: "Stay",  action: "setFlag:nannys_room_unlocked|setBackground:../../assets/rooms/Gemini_Generated_Image_iyo8huiyo8huiyo8.png|showBtn:btn-top|hideObj:obj-door|playSound:door|exit" }
+                ]
+            },
+            {
+                condition: "true",
+                speaker: "Det. Louis Dekoning",
+                lines: ["Locked. Best to ask for a key later."],
+                options: [{ label: "Close", action: "exit" }]
+            }
+        ],
         door_nannys_room_unlocked: {
             speaker: "Det. Louis Dekoning",
             lines: ["The Nanny's room. I have the key.", "The door is now open."],
             options: [
                 { label: "Enter", action: "setFlag:nannys_room_unlocked|goTo:nannys_room.html" },
-                { label: "Stay",  action: "setFlag:nannys_room_unlocked|setBackground:../../assets/rooms/living_room_open.png|showBtn:btn-top|hideObj:obj-door|playSound:door|exit" }
+                { label: "Stay",  action: "setFlag:nannys_room_unlocked|setBackground:../../assets/rooms/Gemini_Generated_Image_iyo8huiyo8huiyo8.png|showBtn:btn-top|hideObj:obj-door|playSound:door|exit" }
             ]
         },
 
@@ -288,6 +321,40 @@ const DIALOGS = {
             lines: [
                 "The safe is empty. Thomas said his mother kept the family database ledgers here.",
                 "If someone took those, they were looking for more than just money."
+            ],
+            options: [{ label: "Close", action: "exit" }]
+        },
+
+        // ── Nanny's Room interactions ──
+        window: {
+            speaker: "Det. Louis Dekoning",
+            lines: [
+                "The window overlooks the garden. It's locked from the inside.",
+                "Wait, is that a scratch on the sill? Like someone tried to pry it open?"
+            ],
+            options: [{ label: "Close", action: "exit" }]
+        },
+        bed: {
+            speaker: "Det. Louis Dekoning",
+            lines: [
+                "A simple, neatly made bed. The nanny clearly values order.",
+                "But there's a slight indentation... as if someone sat here recently, clutching their head."
+            ],
+            options: [{ label: "Close", action: "exit" }]
+        },
+        dresser: {
+            speaker: "Det. Louis Dekoning",
+            lines: [
+                "A modest dresser. There's a picture of a child on top.",
+                "It's not one of the triplets. She has a family of her own somewhere."
+            ],
+            options: [{ label: "Close", action: "exit" }]
+        },
+        cabinet: {
+            speaker: "Det. Louis Dekoning",
+            lines: [
+                "A storage cabinet. Mostly cleaning supplies and spare linens.",
+                "Nothing out of the ordinary here."
             ],
             options: [{ label: "Close", action: "exit" }]
         }

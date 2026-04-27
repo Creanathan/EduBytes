@@ -177,7 +177,11 @@
             } else if (part.startsWith("showBtn:")) {
                 const btnId = part.split(":")[1];
                 const btn = document.getElementById(btnId);
-                if (btn) btn.style.display = "flex";
+                if (btn) {
+                    btn.style.display = "flex";
+                    // Small delay to ensure display:flex is applied before opacity transition starts
+                    setTimeout(() => btn.classList.add('visible'), 50);
+                }
             } else if (part.startsWith("setBackground:")) {
                 const imgPath = part.split(":").slice(1).join(":");
                 const bg = document.querySelector(".room-background");

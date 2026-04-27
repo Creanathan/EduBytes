@@ -14,12 +14,28 @@ window.ResponsiveScaler = {
 
     sync() {
         const bg = document.querySelector('.room-background');
+        if (!bg) return;
+
         const layer = document.querySelector('.interactable-layer');
-        if (!bg || !layer) return;
+
+        // --- Atmospheric Background Logic ---
+        let ambient = document.querySelector('.room-background-ambient');
+        if (!ambient) {
+            ambient = document.createElement('div');
+            ambient.className = 'room-background-ambient';
+            bg.parentNode.insertBefore(ambient, bg);
+        }
 
         // Get the actual image dimensions
         const style = window.getComputedStyle(bg);
-        const bgImg = style.backgroundImage.slice(4, -1).replace(/"/g, "");
+        const bgImgUrl = style.backgroundImage;
+        
+        // Sync ambient background image
+        if (ambient.style.backgroundImage !== bgImgUrl) {
+            ambient.style.backgroundImage = bgImgUrl;
+        }
+
+        const bgImg = bgImgUrl.slice(4, -1).replace(/"/g, "");
         if (!bgImg || bgImg === 'none') return;
 
         const img = new Image();
@@ -46,11 +62,13 @@ window.ResponsiveScaler = {
                 offsetTop = (winHeight - actualHeight) / 2;
             }
 
-            // Apply dimensions to the layer
-            layer.style.width = actualWidth + 'px';
-            layer.style.height = actualHeight + 'px';
-            layer.style.left = offsetLeft + 'px';
-            layer.style.top = offsetTop + 'px';
+            // Apply dimensions to the layer if it exists
+            if (layer) {
+                layer.style.width = actualWidth + 'px';
+                layer.style.height = actualHeight + 'px';
+                layer.style.left = offsetLeft + 'px';
+                layer.style.top = offsetTop + 'px';
+            }
         };
     }
 };
