@@ -202,11 +202,13 @@
                     console.log("Clearing localStorage and redirecting...");
                     localStorage.clear();
                     
-                    // Super robust pathing for any environment (Clean URLs, subfolders, etc.)
-                    const loc = window.top.location;
-                    const pathParts = loc.pathname.split('/rooms');
-                    const basePath = pathParts[0] + '/rooms/outside.html';
-                    const targetURL = loc.origin + basePath;
+                    // Most robust pathing: Replace the current filename with outside.html
+                    let url = window.top.location.href.split('?')[0].split('#')[0];
+                    if (url.endsWith('/')) url = url.slice(0, -1);
+                    
+                    const parts = url.split('/');
+                    parts[parts.length - 1] = 'outside.html';
+                    const targetURL = parts.join('/');
                     
                     console.log("Restarting to:", targetURL);
                     window.top.location.href = targetURL;
