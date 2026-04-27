@@ -12,32 +12,43 @@ The game focuses on the first rule of normalization: **Each cell must contain a 
 
 ## 3. Narrative Integration (Chapter 1)
 
-The mechanic is integrated into the story through a "Blocker-Payoff" loop:
+The mechanic is integrated into the story through a logical character-driven loop:
 
-1.  **The Blocker (Crime Scene)**:
-    Upon investigating the desk at the Crime Scene, Detective Dekoning discovers that the local police logs are "unstructured." He cannot cross-reference the data until it is normalized.
-    *   *Triggers: `crime_scene` entry dialogue.*
-
-2.  **The Puzzle (Tablet - Police OS)**:
-    The player opens their tablet and interacts with the "Search Log Registry." They must tap the "corrupted" entries to split them according to 1NF rules.
-    *   *Mechanism: `normalization_demo/logic.js`*
-
-3.  **The Payoff (Hidden Clue)**:
-    Once 1NF is achieved, the database reveals a decrypted entry:
-    > **Log #005**: "Nanny's Room Entry Denied. Key missing from Living Room Piano."
+1.  **The Breadcrumb (Hallway)**:
+    The Butler (Leduc) complains about the sloppy police work and mentions that **Thomas** took the messy registries to the living room.
+2.  **The Giver (Living Room)**:
+    **Thomas** hands you the police tablet, asking you to fix the data so they can find out what the local police missed.
+    *   *Mechanism: Sets flag `tablet_found`.*
+3.  **The Puzzle (Tablet - Police OS)**:
+    The player must perform a two-step normalization:
+    *   **Phase 1**: Achieve Atomicity (Split rows).
+    *   **Phase 2**: Assign Composite Primary Key (Log ID + Searched Room).
+4.  **The Benefit (Search Engine)**:
+    The player can now use the **Search Bar**. Searching for "Piano" (which failed before normalization) now reveals:
+    > **Log #005**: *"Key seized by Nanny (B. Lemur) from Living Room Piano."*
     *   *Mechanism: Sets flag `database_normalized`.*
-
-4.  **The Progression (Living Room)**:
-    Having "read" the decrypted log, the detective can now find the **Nanny's Key** hidden inside the **Piano** in the Living Room.
-    *   *Condition: `GameState.hasFlag('database_normalized')`*
+5.  **The Confrontation (Nursery)**:
+    The detective now has the information to ask **Beatrix (The Nanny)** about the key. She admits to taking it and gives it to the player.
+    *   *Mechanism: Sets flag `has_nannys_key`.*
 
 ## 4. Technical Details
 
 ### Game Flags
-*   `database_normalized`: Set when the 1NF puzzle is solved. Unlocks the "Key Found" state for the piano.
-*   `has_nannys_key`: Set when the player interacts with the piano after normalization. Unlocks the Nanny's Room door.
+*   `tablet_found`: Set when Thomas gives the tablet to the player.
+*   `database_normalized`: Set when the 1NF puzzle and Key Assignment are solved.
+*   `has_nannys_key`: Set when the Nanny gives the key after being confronted with the tablet data.
 
-### Files Involved
-*   `src/normalization_demo/logic.js`: Handles the 1NF splitting logic and sends the success signal.
-*   `src/js/components/tablet_widget.js`: Listens for the success signal and updates the `GameState`.
-*   `src/js/data/dialogs.js`: Contains the conditional logic for the Piano and the Nanny's Room door.
+## 5. Content Attribution
+
+To maintain project integrity, the codebase distinguishes between original design content and AI-integrated mechanics:
+
+*   **[DESIGNER]**: Original narrative text, character personalities, and location settings provided in the initial design documents.
+*   **[AI - ANTIGRAVITY]**: Forensic normalization logic (Atomicity + Keys), the Query/Search simulation, and the character-driven investigative flow.
+
+Specific AI-added content includes:
+*   Tablet Query Engine: Real-time search feedback demonstrating 1NF benefits.
+*   Thomas/Nanny Hand-off: The refined logic of obtaining the tablet and key.
+*   Nanny's Room: High-fidelity "Discovery" interactions (Window, Bed, Dresser, Cabinet).
+
+
+

@@ -32,11 +32,11 @@
     <button class="btn btn-primary ui-button position-fixed top-50 end-0 translate-middle-y me-3"
             id="btn-right" onclick="goToLocation('hallway.html')"></button>
 
-    <!-- Small Up button near door → Nanny's Room (requires nannys_key) -->
-    <button class="btn btn-secondary ui-button position-fixed"
+    <!-- Up button → Nanny's Room (requires nannys_key) -->
+    <button class="btn btn-primary ui-button position-fixed top-0 start-50 translate-middle-x mt-3"
             id="btn-top"
-            style="display: none; top: 20%; left: 48%;"
-            onclick="goToLocation('nannys_room.html', 'nannys_key')"></button>
+            style="display: none;"
+            onclick="goToLocation('nannys_room.html')"></button>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {

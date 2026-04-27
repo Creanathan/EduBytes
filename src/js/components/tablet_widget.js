@@ -277,13 +277,33 @@
         const dot = document.getElementById('tablet-notif');
         if (!dot) return;
         
+        // [AI - ANTIGRAVITY] - Logical Blinking: 
+        // Only blink if we have data to fix (ledger) but haven't fixed it yet.
+        const hasLedger = window.Inventory && window.Inventory.hasItem('police_ledger');
         const isUnlocked = localStorage.getItem('police_os_unlocked') === 'true';
-        if (!isUnlocked) {
+
+        if (hasLedger && !isUnlocked) {
             dot.classList.add('active');
         } else {
             dot.classList.remove('active');
         }
     }
+
+    // Expose refresh to global for GameState/Inventory events
+    window.TabletWidget = {
+        refresh: updateNotification,
+        toggle: () => {
+            const overlay = document.getElementById('tablet-overlay');
+            if (overlay && overlay.classList.contains('active')) {
+                hideTabletOverlay();
+            } else {
+                showTabletOverlay();
+            }
+        }
+    };
+
+    // Auto-refresh on a timer to catch inventory changes without complex events
+    setInterval(updateNotification, 1000);
 
     let isTabletOpen = false;
 

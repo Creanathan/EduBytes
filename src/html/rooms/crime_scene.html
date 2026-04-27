@@ -9,7 +9,8 @@
     <style>
         .room-background { background-image: url('../../assets/rooms/Gemini_Generated_Image_6ja0d6ja0d6ja0d6.png'); }
         #obj-body { top: 75%; left: 25%; width: 20%; height: 20%; }
-        #obj-desk { top: 52%; left: 58%; width: 27%; height: 30%; }
+        #obj-desk   { top: 52%; left: 58%; width: 27%; height: 30%; }
+        #obj-tablet { top: 62%; left: 65%; width: 8%; height: 12%; }
     </style>
 </head>
 <body class="bg-dark text-white">
@@ -17,8 +18,9 @@
     <div class="room-background"></div>
     
     <div class="interactable-layer">
-        <div id="obj-body" class="clickable-object" onclick="showInteraction('body')" title="Investigate Victim"></div>
-        <div id="obj-desk" class="clickable-object" onclick="showInteraction('broken_glass')" title="Examine Desk Area"></div>
+        <div id="obj-body"   class="clickable-object" onclick="showInteraction('body')" title="Investigate Victim"></div>
+        <div id="obj-desk"   class="clickable-object" onclick="showInteraction('broken_glass')" title="Examine Desk Area"></div>
+        <div id="obj-tablet" class="clickable-object" onclick="openTabletWithNarrative()" title="Examine Police Tablet"></div>
     </div>
 
     <h1>Crime Scene</h1>
@@ -39,5 +41,13 @@
     <script src="../../js/data/dialogs.js"></script>
     <script src="../../js/components/dialog.js"></script>
     <script src="../../js/components/dynamic_loading.js"></script>
+    <script>
+        function openTabletWithNarrative() {
+            if (window.GameState) window.GameState.setFlag('tablet_found');
+            if (window.TabletWidget && window.TabletWidget.toggle) {
+                window.TabletWidget.toggle();
+            }
+        }
+    </script>
 </body>
 </html>
