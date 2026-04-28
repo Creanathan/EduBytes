@@ -29,10 +29,18 @@
                 <div class="app-subtitle" id="step-label">Step 1: Achieving Atomicity (1NF)</div>
             </div>
         </div>
-        <button class="exit-btn" onclick="closeTablet()">
-            EXIT
-        </button>
+        <div style="display: flex; gap: 10px;">
+            <button class="exit-btn" id="reimport-btn-header" onclick="resetData()" title="Wipe & Re-import from USB" style="display: none; border-color: var(--accent-red); color: var(--accent-red);">
+                REIMPORT
+            </button>
+            <button class="exit-btn" onclick="closeTablet()">
+                EXIT
+            </button>
+        </div>
     </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">DATABASE UPDATED</div>
 
     <!-- Main Interface (The Puzzle) -->
     <main id="main-interface" class="content-area" style="display: none;">

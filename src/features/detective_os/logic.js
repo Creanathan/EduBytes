@@ -51,10 +51,19 @@ function checkInventoryLocal(id) {
     return false;
 }
 
+function showGuide() {
+    document.getElementById("guide-modal").style.display = "flex";
+}
+
+function hideGuide() {
+    document.getElementById("guide-modal").style.display = "none";
+}
+
 function checkSetup() {
     const setupScreen = document.getElementById("setup-screen");
     const mainInterface = document.getElementById("main-interface");
     const importBtn = document.getElementById("import-btn");
+    const reimportBtn = document.getElementById("reimport-btn-header");
     const title = document.getElementById("setup-title");
     const text = document.getElementById("setup-text");
     const icon = document.getElementById("setup-status-icon");
@@ -63,6 +72,7 @@ function checkSetup() {
     if (isUnlocked) {
         setupScreen.style.display = "none";
         mainInterface.style.display = "block";
+        reimportBtn.style.display = "block";
         return;
     }
 
@@ -70,6 +80,7 @@ function checkSetup() {
     if (isImported) {
         setupScreen.style.display = "none";
         document.getElementById("crash-screen").style.display = "flex";
+        reimportBtn.style.display = "block";
         return;
     }
 
@@ -141,12 +152,27 @@ function showRepairInterface() {
     renderTable();
 }
 
-function showGuide() {
-    document.getElementById("guide-modal").style.display = "flex";
+function resetData() {
+    if (confirm("WARNING: This will wipe your current database and re-import from the source. Proceed?")) {
+        localStorage.removeItem('Detective_os_imported');
+        localStorage.removeItem('Detective_os_data');
+        localStorage.removeItem('Detective_os_unlocked');
+        location.reload(); // Hard reset
+    }
 }
 
-function hideGuide() {
-    document.getElementById("guide-modal").style.display = "none";
+function showToast(msg) {
+    const toast = document.getElementById("toast");
+    toast.innerText = msg || "DATABASE UPDATED";
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 2000);
+}
+
+function handleKey(event, index, field) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        event.target.blur(); // Triggers editCell via onblur
+    }
 }
 
 function addRow() {
@@ -159,6 +185,7 @@ function addRow() {
     DetectiveData.push(newRow);
     localStorage.setItem('Detective_os_data', JSON.stringify(DetectiveData));
     renderTable();
+    showToast("ROW ADDED");
 }
 
 function deleteRow(index) {
@@ -166,13 +193,20 @@ function deleteRow(index) {
     DetectiveData.splice(index, 1);
     localStorage.setItem('Detective_os_data', JSON.stringify(DetectiveData));
     renderTable();
+    showToast("ROW DELETED");
 }
 
 function editCell(index, field, newValue) {
     if (isUnlocked) return;
-    DetectiveData[index][field] = newValue.trim();
+    const oldVal = DetectiveData[index][field];
+    const cleanVal = newValue.trim();
+    
+    if (oldVal === cleanVal) return; // No change
+
+    DetectiveData[index][field] = cleanVal;
     localStorage.setItem('Detective_os_data', JSON.stringify(DetectiveData));
-    checkStepCondition(); // Real-time check
+    showToast();
+    checkStepCondition(); 
 }
 
 function renderTable() {
@@ -211,9 +245,9 @@ function renderTable() {
         const roomsClass = (displayRooms.includes(",") && currentStep === 1) ? "corrupt-cell" : "";
 
         tr.innerHTML = `
-            <td contenteditable="${isEditable}" onblur="editCell(${index}, 'log_id', this.innerText)">${row.log_id}</td>
-            <td contenteditable="${isEditable}" onblur="editCell(${index}, 'officer', this.innerText)">${row.officer}</td>
-            <td contenteditable="${isEditable}" class="${roomsClass}" onblur="editCell(${index}, 'searched_rooms', this.innerText)">${displayRooms}</td>
+            <td contenteditable="${isEditable}" onkeydown="handleKey(event, ${index}, 'log_id')" onblur="editCell(${index}, 'log_id', this.innerText)">${row.log_id}</td>
+            <td contenteditable="${isEditable}" onkeydown="handleKey(event, ${index}, 'officer')" onblur="editCell(${index}, 'officer', this.innerText)">${row.officer}</td>
+            <td contenteditable="${isEditable}" class="${roomsClass}" onkeydown="handleKey(event, ${index}, 'searched_rooms')" onblur="editCell(${index}, 'searched_rooms', this.innerText)">${displayRooms}</td>
             ${!isUnlocked ? `<td><button onclick="deleteRow(${index})" style="background:none; border:none; color:var(--accent-red); cursor:pointer; font-size:10px;">[DEL]</button></td>` : ''}
         `;
         tbody.appendChild(tr);

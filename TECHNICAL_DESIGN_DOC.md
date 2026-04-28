@@ -46,6 +46,8 @@ This document standardizes the interaction logic and state requirements for Chap
 *   **Detective Tablet**: Personal forensic tool.
     *   **Gated Logic**: Upon import, the database appears 'Crashed'.
     *   **1NF Puzzle**: Player must fix atomicity to decrypt the logs.
+    *   **Manual Restoration**: Players can edit cells (`contenteditable`), add rows, or delete records to achieve compliance.
+    *   **Reimport Safety**: A red 'REIMPORT' button allows wiping the current database to restart the process if an error is made.
     *   **The Reveal**: Successfully reaching 1NF compliance decrypts the entry: *"Piano (UNSUCCESSFUL: Butler hid the key?)"*.
 
 ---
