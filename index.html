@@ -29,9 +29,13 @@
         </div>
 
         <div class="btn-group">
+            <button class="btn-noir btn-play" id="btn-resume" onclick="resumeGame()" style="display: none; border-color: #c8860a;">
+                <span class="btn-icon">➡</span>
+                Resume
+            </button>
             <button class="btn-noir btn-play" id="btn-play" onclick="startGame()">
                 <span class="btn-icon">▶</span>
-                Play
+                New Game
             </button>
             <button class="btn-noir" id="btn-chapters" onclick="openChapters()">
                 <span class="btn-icon">☰</span>
@@ -39,7 +43,7 @@
             </button>
             <button class="btn-noir" id="btn-restart-main" onclick="confirmRestartMain()" style="display: none; color: #e74c3c; border-color: rgba(231, 76, 60, 0.3);">
                 <span class="btn-icon">↻</span>
-                Restart
+                Reset Progress
             </button>
         </div>
 
@@ -111,16 +115,25 @@
             doLaunch();
         }
 
+        function resumeGame() {
+            const lastRoom = localStorage.getItem('edubytes_last_room');
+            if (lastRoom) {
+                doLaunch('./src/rooms/' + lastRoom);
+            } else {
+                doLaunch();
+            }
+        }
+
         function selectChapter(num) {
             selectedChapter = num;
             doLaunch();
         }
 
-        function doLaunch() {
+        function doLaunch(url = './src/rooms/outside.html') {
             closeChapters();
             document.body.classList.add('fade-out');
             setTimeout(() => {
-                window.location.href = './src/rooms/outside.html';
+                window.location.href = url;
             }, 1000);
         }
 
@@ -148,22 +161,33 @@
                     localStorage.removeItem('edubytes_gamestate_sig');
                 }
                 
-                // Also clear inventory
+                // Also clear inventory and last room
                 localStorage.removeItem('edubytes_inventory');
                 localStorage.removeItem('edubytes_inventory_sig');
+                localStorage.removeItem('edubytes_last_room');
                 
                 renderChapters();
-                checkRestartButton();
+                updateUIState();
             }
         }
 
-        function checkRestartButton() {
-            document.getElementById('btn-restart-main').style.display = hasSaveData() ? 'flex' : 'none';
+        function updateUIState() {
+            const hasData = hasSaveData();
+            document.getElementById('btn-restart-main').style.display = hasData ? 'flex' : 'none';
+            document.getElementById('btn-resume').style.display = (hasData && localStorage.getItem('edubytes_last_room')) ? 'flex' : 'none';
+            
+            // Change "Play" button text if resuming is possible
+            const playBtn = document.getElementById('btn-play');
+            if (hasData) {
+                playBtn.innerHTML = '<span class="btn-icon">▶</span> New Game';
+            } else {
+                playBtn.innerHTML = '<span class="btn-icon">▶</span> Play';
+            }
         }
 
         /* ── Init ──────────────────────────────── */
         renderChapters();
-        checkRestartButton();
+        updateUIState();
     </script>
     <script src="./src/js/components/dynamic_loading.js"></script>
 </body>

@@ -19,4 +19,5 @@
 - [x] Implement Anti-Cheat Checksums in `GameState` and `Inventory`
 - [x] Create `PROJECT_STRUCTURE.md` and `DEVELOPER_GUIDE.md`
 - [x] Upgrade to Next-Gen Performance Engine (Speculation Rules + Image Prefetching)
-- [ ] Next steps (to be determined based on new requirements)
+- [x] Implement 'Resume' feature on start screen
+- [ ] Finalize deployment tests
