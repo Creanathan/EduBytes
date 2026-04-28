@@ -11,35 +11,6 @@
         #obj-body { top: 75%; left: 25%; width: 20%; height: 20%; }
         #obj-desk   { top: 52%; left: 58%; width: 27%; height: 30%; }
         #obj-tablet { top: 62%; left: 65%; width: 8%; height: 12%; }
-
-        /* Bureau Overlay */
-        #bureau-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000;
-            display: none; align-items: center; justify-content: center;
-        }
-        #bureau-container {
-            position: relative;
-            width: 75vw; height: 42.1875vw; /* 16:9 aspect ratio */
-            max-height: 75vh; max-width: 133.33vh;
-            background-size: cover; /* Use cover to fill the bordered box */
-            background-repeat: no-repeat;
-            background-position: center;
-            background-image: url('../../assets/rooms/crime_scene_bureau_USB.png');
-            border: 2px solid rgba(200, 134, 10, 0.5); /* Vintage Gold */
-            border-radius: 12px;
-            box-shadow: 0 15px 50px rgba(0,0,0,1), 0 0 20px rgba(200, 134, 10, 0.15);
-            background-color: #0a0a0f;
-            animation: modal-zoom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        @keyframes modal-zoom {
-            from { transform: scale(0.95); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-        #usb-hitbox {
-            position: absolute;
-            top: 55%; left: 45%; width: 15%; height: 15%; /* Approximate */
-            cursor: pointer;
-        }
     </style>
 </head>
 <body class="bg-dark text-white">
@@ -48,7 +19,7 @@
     
     <div class="interactable-layer">
         <div id="obj-body"   class="clickable-object" onclick="showInteraction('body')" title="Investigate Victim"></div>
-        <div id="obj-desk"   class="clickable-object" onclick="openBureau()" title="Examine Desk Area"></div>
+        <div id="obj-desk"   class="clickable-object" onclick="goToLocation('crime_scene_bureau.html')" title="Examine Desk Area"></div>
         <div id="obj-tablet" class="clickable-object" onclick="openTabletWithNarrative()" title="Examine Police Tablet"></div>
     </div>
 
@@ -56,14 +27,6 @@
 
     <!-- UI Buttons -->
     <button class="btn btn-primary ui-button position-fixed bottom-0 start-50 translate-middle-x mb-4" id="btn-bottom" onclick="goToLocation('hallway.html')"></button>
-
-    <!-- Bureau Close-up Overlay -->
-    <div id="bureau-overlay">
-        <div id="bureau-container">
-            <div id="usb-hitbox" class="clickable-object" onclick="pickupUSB()" title="Take USB Stick"></div>
-        </div>
-        <button class="btn position-absolute top-0 end-0 m-4" style="z-index: 5001; background: #0a0a0f; border: 1px solid rgba(200, 134, 10, 0.5); color: #e8dcc8; transition: all 0.2s;" onmouseover="this.style.background='#1e1e28'; this.style.color='#fff'" onmouseout="this.style.background='#0a0a0f'; this.style.color='#e8dcc8'" onclick="closeBureau()">← Back to Room</button>
-    </div>
 
     <script src="../../js/services/gamestate.js"></script>
     <script src="../../js/services/routing_guard.js"></script>
@@ -83,44 +46,6 @@
             if (window.GameState) window.GameState.setFlag('tablet_found');
             if (window.TabletWidget && window.TabletWidget.toggle) {
                 window.TabletWidget.toggle();
-            }
-        }
-
-        // Bureau Logic
-        function openBureau() {
-            const overlay = document.getElementById('bureau-overlay');
-            const container = document.getElementById('bureau-container');
-            const hitbox = document.getElementById('usb-hitbox');
-
-            overlay.style.display = 'flex';
-
-            if (Inventory.hasItem('usb_stick')) {
-                container.style.backgroundImage = "url('../../assets/rooms/crime_scene_bureau.png')";
-                hitbox.style.display = 'none';
-            } else {
-                container.style.backgroundImage = "url('../../assets/rooms/crime_scene_bureau_USB.png')";
-                hitbox.style.display = 'block';
-            }
-        }
-
-        function closeBureau() {
-            document.getElementById('bureau-overlay').style.display = 'none';
-        }
-
-        function pickupUSB() {
-            if (Inventory.addItem('usb_stick')) {
-                // Show the image without the USB
-                document.getElementById('bureau-container').style.backgroundImage = "url('../../assets/rooms/crime_scene_bureau.png')";
-                document.getElementById('usb-hitbox').style.display = 'none';
-                
-                // Optional: Show a dialog that you found it
-                if (window.showDialog) {
-                    window.showDialog("You found a USB stick on the desk. It might contain important data.");
-                } else if (window.DialogEngine) {
-                    window.DialogEngine.playSequence([
-                        { speaker: "Detective", text: "A USB stick... This might have the files I need." }
-                    ]);
-                }
             }
         }
     </script>
