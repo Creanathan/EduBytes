@@ -232,9 +232,58 @@ function resetData() {
 
 function showToast(msg) {
     const toast = document.getElementById("toast");
+    if (!toast) return;
     toast.innerText = msg || "DATABASE UPDATED";
     toast.classList.add("show");
     setTimeout(() => toast.classList.remove("show"), 2000);
+}
+
+function validateDB() {
+    const fb = document.getElementById("validate-feedback");
+    fb.style.display = "block";
+
+    // Check 1: No data at all
+    if (DetectiveData.length === 0) {
+        fb.className = "validate-feedback error";
+        fb.innerHTML = "<b>VALIDATE ERROR:</b> Database is empty. Import data first.";
+        return;
+    }
+
+    // Check 2: Atomicity — find all rows with commas
+    const corruptRows = DetectiveData
+        .map((row, i) => ({ i, row }))
+        .filter(({ row }) => row.observation.includes(","));
+
+    if (corruptRows.length > 0) {
+        const list = corruptRows.map(({ row }) =>
+            `<li>Row <b>${row.log_id}</b>: "${row.observation.substring(0, 60)}..."</li>`
+        ).join("");
+        fb.className = "validate-feedback error";
+        fb.innerHTML = `<b>FAIL — Step 1 Not Passed:</b> ${corruptRows.length} non-atomic row(s) detected.<ul style="margin:6px 0 0 16px;">${list}</ul>Split these into separate rows to fix.`;
+        return;
+    }
+
+    // Check 3: All data atomic — check if still on step 1
+    if (currentStep === 1) {
+        fb.className = "validate-feedback warn";
+        fb.innerHTML = "<b>STEP 1 PASSED ✔</b> — All cells are atomic. Now identify the Composite Key by clicking the column headers.";
+        currentStep = 2;
+        updateStepUI();
+        renderTable();
+        return;
+    }
+
+    // Check 4: Keys assigned
+    if (isUnlocked) {
+        fb.className = "validate-feedback success";
+        fb.innerHTML = "<b>FULLY VALIDATED ✔</b> — Database is 1NF compliant. Composite key confirmed. Case file unlocked.";
+        return;
+    }
+
+    // Step 2 in progress — remind which keys are selected
+    const selected = [...selectedKeys].join(" + ") || "none";
+    fb.className = "validate-feedback warn";
+    fb.innerHTML = `<b>STEP 1 PASSED ✔</b> — Data is atomic. Selected keys: <b>${selected}</b>. You need <b>log_id + observation</b> to uniquely identify each row.`;
 }
 
 function handleKey(event, index, field) {
@@ -463,21 +512,25 @@ function runQuery() {
 }
 
 function showSuccessUI() {
+    // Hide error, show success banner
     const banner = document.getElementById("error-banner");
     if (banner) banner.style.display = "none";
-
     const success = document.getElementById("success-banner");
     if (success) success.style.display = "flex";
 
-    const label = document.getElementById("step-label");
-    if (label) label.innerText = "Step 3: Data Secured (1NF Compliance)";
+    // Hide add-row (editing disabled after unlock)
+    const addBtn = document.getElementById("add-row-btn");
+    if (addBtn) addBtn.style.display = "none";
 
+    // Update step label
+    const label = document.getElementById("step-label");
+    if (label) label.innerText = "Case File Decrypted — 1NF Compliant";
+
+    // Glow the table
     const table = document.getElementById("Detective-db");
     if (table) {
         table.classList.add("success-glow");
-        const rows = table.querySelectorAll("tbody tr");
-        rows.forEach(row => {
-            // Highlight the newly revealed clue
+        table.querySelectorAll("tbody tr").forEach(row => {
             if (row.innerText.includes("Butler hid the key?")) {
                 row.style.background = "rgba(200, 134, 10, 0.25)";
                 row.style.border = "1px solid #c8860a";
@@ -486,9 +539,43 @@ function showSuccessUI() {
         });
     }
 
-    // Success text update
-    const feedback = document.getElementById("search-feedback");
-    feedback.className = "search-feedback success";
-    feedback.style.display = "block";
-    feedback.innerText = "QUERY ENGINE ONLINE: Data is now atomic and searchable. Try searching for 'Piano'.";
+    // Build suspect profile cards from decrypted data
+    const caseSection = document.getElementById("case-file-section");
+    const cardsContainer = document.getElementById("suspect-cards");
+    if (caseSection && cardsContainer) {
+        // Group rows by subject
+        const profiles = {};
+        DetectiveData.forEach(row => {
+            const name = row.subject || "Unknown";
+            if (!profiles[name]) profiles[name] = [];
+            let obs = row.observation;
+            if (obs.includes("ERR_DATA_BLOCK_772")) obs = "Piano (UNSUCCESSFUL: Butler hid the key?)";
+            profiles[name].push(obs);
+        });
+
+        cardsContainer.innerHTML = Object.entries(profiles).map(([name, observations]) => {
+            const isCritical = observations.some(o => o.includes("Butler hid"));
+            const isHighlight = name.includes("Butler") || isCritical;
+            const borderColor = isHighlight ? "var(--accent-amber)" : "rgba(255,255,255,0.08)";
+            const glowColor  = isHighlight ? "rgba(200,134,10,0.08)" : "transparent";
+            const observationList = observations.map(o =>
+                `<li style="margin-bottom:4px; ${o.includes('Butler hid') ? 'color:var(--accent-amber);font-weight:bold;' : ''}">${o}</li>`
+            ).join("");
+            return `
+            <div class="suspect-card" style="border-color:${borderColor}; background: ${glowColor};">
+                <div class="suspect-name">${name}</div>
+                <ul class="suspect-observations">${observationList}</ul>
+            </div>`;
+        }).join("");
+
+        caseSection.style.display = "block";
+    }
+
+    // Validate feedback auto-update
+    const fb = document.getElementById("validate-feedback");
+    if (fb) {
+        fb.style.display = "block";
+        fb.className = "validate-feedback success";
+        fb.innerHTML = "<b>FULLY VALIDATED ✔</b> — Database is 1NF compliant. Composite key confirmed. Case file unlocked.";
+    }
 }

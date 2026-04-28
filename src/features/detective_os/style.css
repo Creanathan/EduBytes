@@ -392,6 +392,80 @@ td[contenteditable="true"]:focus {
     color: #000;
 }
 
+/* VALIDATE button — always visible, green accent */
+.btn-validate {
+    background: rgba(39, 174, 96, 0.12) !important;
+    border: 1px solid var(--accent-green) !important;
+    color: var(--accent-green) !important;
+}
+.btn-validate:hover {
+    background: var(--accent-green) !important;
+    color: #000 !important;
+}
+
+/* Validate Feedback Panel */
+.validate-feedback {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    margin-bottom: 12px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    line-height: 1.6;
+    animation: slideDown 0.3s ease-out;
+}
+.validate-feedback.error {
+    background: var(--accent-red-dim);
+    color: var(--accent-red);
+    border: 1px solid var(--accent-red);
+}
+.validate-feedback.warn {
+    background: var(--accent-amber-dim);
+    color: var(--accent-amber);
+    border: 1px solid var(--accent-amber);
+}
+.validate-feedback.success {
+    background: var(--accent-green-dim);
+    color: var(--accent-green);
+    border: 1px solid var(--accent-green);
+}
+
+/* Case File Section */
+.case-file-section {
+    border-top: 1px solid rgba(200,134,10,0.15);
+    padding-top: 4px;
+}
+.suspect-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 12px 0;
+}
+.suspect-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 14px 16px;
+    animation: slideDown 0.4s ease-out;
+}
+.suspect-name {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: bold;
+    color: var(--accent-amber);
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba(200,134,10,0.15);
+    padding-bottom: 6px;
+}
+.suspect-observations {
+    margin: 0;
+    padding-left: 14px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
 .search-feedback {
     font-family: var(--font-mono);
     font-size: 11px;

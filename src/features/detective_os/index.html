@@ -57,9 +57,11 @@
             <div class="search-container">
                 <input type="text" id="db-search" placeholder="Query registry (e.g. 'Piano')...">
                 <button onclick="runQuery()">SEARCH</button>
-                <button class="btn-add" onclick="addRow()">+ ADD ROW</button>
+                <button class="btn-add" onclick="addRow()" id="add-row-btn">+ ADD ROW</button>
+                <button class="btn-validate" onclick="validateDB()" id="validate-btn">✓ VALIDATE</button>
             </div>
             <div id="search-feedback" class="search-feedback"></div>
+            <div id="validate-feedback" class="validate-feedback" style="display:none;"></div>
             <div class="db-label">DATABASE: Search_Log_Registry</div>
             <table id="Detective-db">
                 <thead>
@@ -71,11 +73,17 @@
 
         <div id="success-banner" class="success-banner" style="display: none;">
             <div class="success-icon">✓</div>
-            <div>
-                <div class="success-title">Normalization Success</div>
-                <div>1NF compliance reached. Case file updated in registry.</div>
-                <button class="btn-continue" onclick="closeTablet()">Close Tablet</button>
+            <div style="flex:1;">
+                <div class="success-title">Database Normalized — 1NF Compliant</div>
+                <div>Witness registry decrypted. Suspect identities revealed. Case file unlocked.</div>
             </div>
+        </div>
+
+        <!-- Case File: Suspect Profiles (visible after unlock) -->
+        <div id="case-file-section" style="display:none;" class="db-section case-file-section">
+            <div class="db-label" style="margin-top:20px;">◈ DECRYPTED CASE FILE — SUSPECT PROFILES</div>
+            <div id="suspect-cards" class="suspect-cards"></div>
+            <button class="btn-continue" style="margin: 12px 0 20px;" onclick="closeTablet()">Close Tablet &amp; Investigate</button>
         </div>
     </main>
 
