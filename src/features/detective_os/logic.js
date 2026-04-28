@@ -264,9 +264,16 @@ function renderTable() {
         const tr = document.createElement("tr");
 
         let displayObs = row.observation;
+        let displaySubject = row.subject;
+
         // Logic to reveal the 'Butler' clue only after normalization is fixed
         if (displayObs.includes("ERR_DATA_BLOCK_772") && isUnlocked) {
             displayObs = "Piano (UNSUCCESSFUL: Butler hid the key?)";
+        }
+
+        // REWARD MECHANIC: Hide the Subject until unlocked
+        if (!isUnlocked) {
+            displaySubject = "[REDACTED]";
         }
 
         const isEditable = !isUnlocked;
@@ -274,7 +281,7 @@ function renderTable() {
 
         tr.innerHTML = `
             <td contenteditable="${isEditable}" onfocus="onFocusCell(event)" onkeydown="handleKey(event, ${index}, 'log_id')" onblur="editCell(${index}, 'log_id', this.innerText)">${row.log_id}</td>
-            <td contenteditable="${isEditable}" onfocus="onFocusCell(event)" onkeydown="handleKey(event, ${index}, 'subject')" onblur="editCell(${index}, 'subject', this.innerText)">${row.subject}</td>
+            <td contenteditable="false" style="color: var(--accent-amber); opacity: 0.7;">${displaySubject}</td>
             <td contenteditable="${isEditable}" class="${obsClass}" onfocus="onFocusCell(event)" onkeydown="handleKey(event, ${index}, 'observation')" onblur="editCell(${index}, 'observation', this.innerText)">${displayObs}</td>
             ${!isUnlocked ? `<td><button onclick="deleteRow(${index})" style="background:none; border:none; color:var(--accent-red); cursor:pointer; font-size:10px;">[DEL]</button></td>` : ''}
         `;
