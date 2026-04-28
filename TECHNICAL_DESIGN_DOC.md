@@ -42,7 +42,8 @@ This document standardizes the interaction logic and state requirements for Chap
 ### Crime Scene Objects
 *   **Body**: Investigate Amelia’s physical state (Discoloration clue).
 *   **Broken Glass**: Evidence of the residue.
-*   **Detective Tablet**: Entry point for the 1NF puzzle.
+*   **USB Stick**: Item required to import data into the Detective Tablet.
+*   **Detective Tablet**: Personal forensic tool. Requires `usb_stick` or `ledger` to begin normalization.
 
 ---
 

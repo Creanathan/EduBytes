@@ -9,6 +9,7 @@ This document standardizes the narrative, characters, and investigative mechanic
 **The Client**: Thomas Souvellier, Amelia's partner and a bright young professor, has hired the brilliant Belgian detective **Louis Dekoning** to solve the case.
 **The Twist**: Thomas and Amelia were secretly married and planned to flee the estate. Thomas is the son of the Chief of Police, who believes there isn't enough evidence to prosecute.
 **The Revelation**: The murderer is **Beatrix Lémur**, the long-time Nanny of the Dégrasse family.
+**The Toolkit**: Detective Dekoning uses his high-tech **Detective Tablet** to analyze case files. Official police data (provided via **USB Sticks** or **Data Ledgers**) must be imported into the tablet for forensic normalization.
 
 ---
 
@@ -46,7 +47,7 @@ This document standardizes the narrative, characters, and investigative mechanic
 | **Hallway** | Old, Rich, Stately | Central hub for character interactions. |
 | **Living Room** | Big, Comfortable, Open | Meeting Thomas; Finding the Nanny's Key. |
 | **Nursery** | Big, Empty, Eerie | Meeting the Nanny; Seeing the family picture. |
-| **Crime Scene** | Cold, Heavy, Forensic | Finding the Police Tablet; Starting the 1NF Puzzle. |
+| **Crime Scene** | Cold, Heavy, Forensic | Finding the **USB Stick**; Starting the 1NF Puzzle on the **Detective Tablet**. |
 | **Nanny's Room** | Cozy, Personal, Modest | Investigating the Nanny's secret life. |
 
 ---
@@ -67,8 +68,8 @@ This document standardizes the narrative, characters, and investigative mechanic
 ### Logic Guards 
 *   **Crime Scene**: Locked until the Butler (Leduc) grants permission.
 *   **Nanny's Room**: Locked until the 1NF puzzle is solved and the key is recovered from the Piano.
-* TBI **Police Tablet**: Says 'no entries' until player finds dongle at the crime scene.
-* TBI **Upstairs**: Locked until Thomas Souvellier asks Louis if Louis has checked upstairs. --> Going up triggers titlescreen + credits
+*   **Detective Tablet**: Starts in an empty state. Requires the player to find the **USB Stick** (at the Crime Scene) or the **Police Ledger** (from Thomas) to import the case data.
+* **Upstairs**: Locked until Thomas Souvellier asks Louis if Louis has checked upstairs. --> Going up triggers titlescreen + credits
 
 ### Police Ledger
 * TBI **Crime Scene**: Knife ("knife" used as primary key for multiple entrees eg. type, where located in house, age of blood) --> indicator that you should use the ledger.
