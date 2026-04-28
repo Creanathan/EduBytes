@@ -230,9 +230,20 @@ body::after {
     margin-bottom: 4px;
 }
 
-@keyframes blink-border {
-    0%, 100% { border-color: var(--accent-red); }
-    50% { border-color: rgba(192, 57, 43, 0.3); }
+@keyframes slideDown {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.content-area {
+    display: flex;
+    flex-direction: column;
+}
+
+#main-interface {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .btn-guide {

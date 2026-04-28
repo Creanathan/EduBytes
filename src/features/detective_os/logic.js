@@ -170,7 +170,7 @@ function completeImport() {
 function showRepairInterface() {
     document.getElementById("crash-screen").style.display = "none";
     const mainInterface = document.getElementById("main-interface");
-    mainInterface.style.display = "block";
+    mainInterface.style.display = "flex";
     mainInterface.style.animation = "slideDown 0.5s forwards";
     renderTable();
 }
