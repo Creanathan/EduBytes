@@ -3,14 +3,14 @@
  * Developer: Detective Louis Dekoning (In-Lore)
  */
 
-// Initial "Dirty" database
+// Initial "Dirty" database (Mangled state)
 const DEFAULT_DATA = [
-    { log_id: "#001", officer: "Off. Miller", searched_rooms: "Kitchen" },
-    { log_id: "#002", officer: "Det. Louis", searched_rooms: "Nursery, Living Room, Hallway" },
+    { log_id: "#001", officer: "Off. Miller", searched_rooms: "Kitchen, Pantry" },
+    { log_id: "#002", officer: "Det. Louis", searched_rooms: "Nursery, Living Room, Hallway, Office" },
     { log_id: "#003", officer: "Off. Hayes", searched_rooms: "Study, Master Bedroom" },
     { log_id: "#004", officer: "Sgt. Cross", searched_rooms: "Bathroom" },
-    // [AI - ANTIGRAVITY] - Narrative conflict clue
-    { log_id: "#005", officer: "Off. Miller", searched_rooms: "Piano (UNSUCCESSFUL: Butler hid the key?)" }
+    // [AI - ANTIGRAVITY] - Mangled narrative clue hidden by 1NF violations
+    { log_id: "#005", officer: "Off. Miller", searched_rooms: "Piano (ERR_DATA_BLOCK_772: HIDDEN_RESTRICTED)" }
 ];
 
 let currentStep = 1; // 1: Atomicity, 2: Primary Key
@@ -136,11 +136,17 @@ function renderTable() {
         // Check if the cell has a comma (violates 1NF Atomicity)
         const hasComma = row.searched_rooms.includes(",");
         
+        let displayRooms = row.searched_rooms;
+        // Logic to reveal the 'Butler' clue only after normalization is fixed
+        if (displayRooms.includes("ERR_DATA_BLOCK_772") && isUnlocked) {
+            displayRooms = "Piano (UNSUCCESSFUL: Butler hid the key?)";
+        }
+
         let roomsCellHTML = "";
         if (hasComma && currentStep === 1) {
-            roomsCellHTML = `<td class="corrupt-cell" onclick="splitData(${index})">${row.searched_rooms}</td>`;
+            roomsCellHTML = `<td class="corrupt-cell" onclick="splitData(${index})">${displayRooms}</td>`;
         } else {
-            roomsCellHTML = `<td>${row.searched_rooms}</td>`;
+            roomsCellHTML = `<td>${displayRooms}</td>`;
         }
 
         tr.innerHTML = `
@@ -285,9 +291,11 @@ function showSuccessUI() {
         table.classList.add("success-glow");
         const rows = table.querySelectorAll("tbody tr");
         rows.forEach(row => {
+            // Highlight the newly revealed clue
             if (row.innerText.includes("Butler hid the key?")) {
-                row.style.background = "rgba(200, 134, 10, 0.2)";
+                row.style.background = "rgba(200, 134, 10, 0.25)";
                 row.style.border = "1px solid #c8860a";
+                row.style.boxShadow = "inset 0 0 15px rgba(200, 134, 10, 0.1)";
             }
         });
     }
