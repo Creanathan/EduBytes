@@ -18,7 +18,13 @@
         if (message) {
             localStorage.setItem('routing_blocked_msg', message);
         }
-        window.location.replace('outside.html');
+        
+        const lastRoom = localStorage.getItem('edubytes_last_room');
+        if (lastRoom && lastRoom !== 'outside.html') {
+            window.location.replace(lastRoom);
+        } else {
+            window.location.replace('outside.html');
+        }
     }
 
     function getFilenameFromPath(path) {
@@ -31,8 +37,11 @@
 
         const currentRoom = sessionStorage.getItem('edubytes_current_room');
         const allowedRoom = sessionStorage.getItem('edubytes_allowed_room');
+        const lastSavedRoom = localStorage.getItem('edubytes_last_room')?.replace('.html', '');
 
-        return filename === currentRoom || filename === allowedRoom;
+        // Allow if it was the room we just moved to, the room we are in, 
+        // or the room we last saved in (persists across reloads).
+        return filename === currentRoom || filename === allowedRoom || filename === lastSavedRoom;
     }
 
     window.EduBytesNavigation = {
