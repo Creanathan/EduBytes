@@ -58,7 +58,7 @@
                 link.rel = 'prefetch';
                 link.as = 'image';
                 // Construct path relative to root
-                link.href = (currentFile === 'index.html' ? '.' : '..') + assetPath.replace('/src', '');
+                link.href = (currentFile === 'index.html' ? './src' : '..') + assetPath.replace('/src', '');
                 
                 // Fallback for root-relative hosting
                 if (window.location.protocol !== 'file:') {
