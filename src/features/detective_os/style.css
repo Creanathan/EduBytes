@@ -62,7 +62,7 @@ body::after {
 
 .content-area {
     flex: 1;
-    overflow-y: auto;
+    overflow-y: scroll; /* Persistent gutter prevents layout jumps */
     padding-bottom: 20px;
 }
 
@@ -71,14 +71,14 @@ body::after {
     width: 6px;
 }
 .content-area::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.1);
 }
 .content-area::-webkit-scrollbar-thumb {
-    background: rgba(200, 134, 10, 0.3);
+    background: rgba(200, 134, 10, 0.2);
     border-radius: 10px;
 }
 .content-area::-webkit-scrollbar-thumb:hover {
-    background: rgba(200, 134, 10, 0.6);
+    background: rgba(200, 134, 10, 0.5);
 }
 
 /* ============================================
