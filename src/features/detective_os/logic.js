@@ -36,10 +36,17 @@ function checkSetup() {
     const text = document.getElementById("setup-text");
     const icon = document.getElementById("setup-status-icon");
 
-    // If already imported, show the main interface
-    if (isImported) {
+    // If already unlocked (normalization done), show the results directly
+    if (isUnlocked) {
         setupScreen.style.display = "none";
         mainInterface.style.display = "block";
+        return;
+    }
+
+    // If imported but not yet repaired, show crash screen
+    if (isImported) {
+        setupScreen.style.display = "none";
+        document.getElementById("crash-screen").style.display = "flex";
         return;
     }
 
@@ -68,43 +75,43 @@ function checkSetup() {
 }
 
 function startImport() {
-    const importBtn = document.getElementById("import-btn");
-    const text = document.getElementById("setup-text");
-    const icon = document.getElementById("setup-status-icon");
-    
-    importBtn.disabled = true;
-    importBtn.style.opacity = "0.5";
+    document.getElementById("setup-screen").style.display = "none";
+    document.getElementById("loading-screen").style.display = "flex";
     
     let progress = 0;
-    icon.classList.add("pulse-fast");
+    const bar = document.getElementById("loading-bar-fill");
+    const label = document.getElementById("loading-text");
     
     const interval = setInterval(() => {
-        progress += 5;
-        text.innerText = `UPLINK IN PROGRESS... ${progress}%`;
+        progress += Math.random() * 8;
+        if (progress > 100) progress = 100;
+        
+        bar.style.width = `${progress}%`;
+        label.innerText = `Loading data clusters... ${Math.floor(progress)}%`;
         
         if (progress >= 100) {
             clearInterval(interval);
-            completeImport();
+            setTimeout(completeImport, 400);
         }
-    }, 50); // Simulate fast digital transfer
+    }, 80); 
+}
 
-    function completeImport() {
-        isImported = true;
-        DetectiveData = [...DEFAULT_DATA]; // Load the default dirty data
-        localStorage.setItem('Detective_os_imported', 'true');
-        localStorage.setItem('Detective_os_data', JSON.stringify(DetectiveData));
+function completeImport() {
+    isImported = true;
+    DetectiveData = [...DEFAULT_DATA]; 
+    localStorage.setItem('Detective_os_imported', 'true');
+    localStorage.setItem('Detective_os_data', JSON.stringify(DetectiveData));
 
-        const setupScreen = document.getElementById("setup-screen");
-        const mainInterface = document.getElementById("main-interface");
-        
-        setupScreen.style.animation = "slideDown 0.5s reverse forwards";
-        setTimeout(() => {
-            setupScreen.style.display = "none";
-            mainInterface.style.display = "block";
-            mainInterface.style.animation = "slideDown 0.5s forwards";
-            renderTable();
-        }, 500);
-    }
+    document.getElementById("loading-screen").style.display = "none";
+    document.getElementById("crash-screen").style.display = "flex";
+}
+
+function showRepairInterface() {
+    document.getElementById("crash-screen").style.display = "none";
+    const mainInterface = document.getElementById("main-interface");
+    mainInterface.style.display = "block";
+    mainInterface.style.animation = "slideDown 0.5s forwards";
+    renderTable();
 }
 
 function renderTable() {
