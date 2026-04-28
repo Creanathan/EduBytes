@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../../css/rooms.css">
     <style>
         .room-background { background-image: url('../../assets/rooms/crime_scene_bureau_USB.png'); }
+        .room-background.no-usb { background-image: url('../../assets/rooms/crime_scene_bureau.png') !important; }
         
         #usb-hitbox {
             position: absolute;
@@ -40,25 +41,29 @@
     <script src="../../js/components/dialog.js"></script>
     <script src="../../js/components/dynamic_loading.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        function updateRoomState() {
             const bg = document.getElementById('room-bg');
             const hitbox = document.getElementById('usb-hitbox');
             
             if (Inventory.hasItem('usb_stick')) {
-                bg.style.backgroundImage = "url('../../assets/rooms/crime_scene_bureau.png')";
-                hitbox.style.display = 'none';
+                bg.classList.add('no-usb');
+                if (hitbox) hitbox.style.display = 'none';
                 
                 // Force sync to update ambient background
-                setTimeout(() => { if(window.ResponsiveScaler) window.ResponsiveScaler.sync(); }, 50);
+                setTimeout(() => { 
+                    if(window.ResponsiveScaler) window.ResponsiveScaler.sync(); 
+                }, 100);
+            } else {
+                bg.classList.remove('no-usb');
+                if (hitbox) hitbox.style.display = 'block';
             }
-        });
+        }
+
+        document.addEventListener('DOMContentLoaded', updateRoomState);
 
         function pickupUSB() {
             if (Inventory.addItem('usb_stick')) {
-                document.getElementById('room-bg').style.backgroundImage = "url('../../assets/rooms/crime_scene_bureau.png')";
-                document.getElementById('usb-hitbox').style.display = 'none';
-                
-                if (window.ResponsiveScaler) window.ResponsiveScaler.sync();
+                updateRoomState();
 
                 if (window.showDialog) {
                     window.showDialog("You found a USB stick on the desk. It might contain important data.");
