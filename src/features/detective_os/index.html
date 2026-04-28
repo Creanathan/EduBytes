@@ -44,48 +44,123 @@
 
     <!-- Main Interface (The Puzzle) -->
     <main id="main-interface" class="content-area" style="display: none;">
-        <div id="error-banner" class="error-banner">
-            <div class="error-icon">⚠</div>
-            <div>
-                <div class="error-title" id="error-title">1NF Integrity Fault</div>
-                <div id="error-text">Atomic cell violation detected. Manually edit, add rows, or split data to achieve 1NF compliance.</div>
-            </div>
-            <button class="btn-guide" onclick="showGuide()">HOW TO FIX</button>
+
+        <!-- Tab Bar (only revealed after unlock) -->
+        <div id="tab-bar" class="tab-bar" style="display:none;">
+            <button class="tab-btn active" id="tab-btn-database"    onclick="switchTab('database')">📋 DATABASE</button>
+            <button class="tab-btn"        id="tab-btn-crossref"    onclick="switchTab('crossref')">🔗 CROSS-REFERENCE</button>
+            <button class="tab-btn"        id="tab-btn-accusation"  onclick="switchTab('accusation')">⚖ FILE ACCUSATION</button>
         </div>
 
-        <div class="db-section">
-            <div class="search-container">
-                <input type="text" id="db-search" placeholder="Query registry (e.g. 'Piano')...">
-                <button onclick="runQuery()">SEARCH</button>
-                <button class="btn-add" onclick="addRow()" id="add-row-btn">+ ADD ROW</button>
-                <button class="btn-validate" onclick="validateDB()" id="validate-btn">✓ VALIDATE</button>
+        <!-- ═══════════════════════════════════
+             TAB 1: DATABASE (always active first)
+             ═══════════════════════════════════ -->
+        <div id="tab-database">
+            <div id="error-banner" class="error-banner">
+                <div class="error-icon">⚠</div>
+                <div>
+                    <div class="error-title" id="error-title">1NF Integrity Fault</div>
+                    <div id="error-text">Atomic cell violation detected. Manually edit, add rows, or split data to achieve 1NF compliance.</div>
+                </div>
+                <button class="btn-guide" onclick="showGuide()">HOW TO FIX</button>
             </div>
-            <div id="search-feedback" class="search-feedback"></div>
-            <div id="validate-feedback" class="validate-feedback" style="display:none;"></div>
-            <div class="db-label">DATABASE: Search_Log_Registry</div>
-            <table id="Detective-db">
-                <thead>
-                    <tr><th>Log_ID</th><th>Subject</th><th>Observation</th></tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+
+            <div class="db-section">
+                <div class="search-container">
+                    <input type="text" id="db-search" placeholder="Query registry (e.g. 'Piano')...">
+                    <button onclick="runQuery()">SEARCH</button>
+                    <button class="btn-add" onclick="addRow()" id="add-row-btn">+ ADD ROW</button>
+                    <button class="btn-validate" onclick="validateDB()" id="validate-btn">✓ VALIDATE</button>
+                </div>
+                <div id="search-feedback" class="search-feedback"></div>
+                <div id="validate-feedback" class="validate-feedback" style="display:none;"></div>
+                <div class="db-label">DATABASE: Search_Log_Registry</div>
+                <table id="Detective-db">
+                    <thead>
+                        <tr><th>Log_ID</th><th>Subject</th><th>Observation</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <div id="success-banner" class="success-banner" style="display: none;">
+                <div class="success-icon">✓</div>
+                <div style="flex:1;">
+                    <div class="success-title">Database Normalized — 1NF Compliant</div>
+                    <div>Witness registry decrypted. Suspect identities revealed. Use the tabs above to analyze the case.</div>
+                </div>
+            </div>
         </div>
 
-        <div id="success-banner" class="success-banner" style="display: none;">
-            <div class="success-icon">✓</div>
-            <div style="flex:1;">
-                <div class="success-title">Database Normalized — 1NF Compliant</div>
-                <div>Witness registry decrypted. Suspect identities revealed. Case file unlocked.</div>
+        <!-- ═══════════════════════════════════
+             TAB 2: CROSS-REFERENCE ANALYSIS
+             ═══════════════════════════════════ -->
+        <div id="tab-crossref" style="display:none;">
+            <div class="db-section">
+                <div class="crossref-intro">
+                    <div class="db-label" style="margin-bottom:6px;">◈ FORENSIC CROSS-REFERENCE TOOL</div>
+                    <p class="crossref-desc">Query the normalized database to find patterns, confirm alibis, and detect contradictions. This is why normalization matters — atomic data makes every query precise.</p>
+                </div>
+
+                <div class="crossref-filters">
+                    <div class="filter-group">
+                        <label class="filter-label">FILTER BY SUSPECT</label>
+                        <select id="crossref-suspect" class="crossref-select">
+                            <option value="">— All Suspects —</option>
+                            <option value="Leduc">Leduc (Butler)</option>
+                            <option value="Beatrix">Beatrix (Nanny)</option>
+                            <option value="Thomas">Thomas (Partner)</option>
+                            <option value="Miller">Off. Miller</option>
+                            <option value="System">System Registry</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">KEYWORD / LOCATION</label>
+                        <input type="text" id="crossref-keyword" class="crossref-input" placeholder="e.g. Piano, Kitchen, 22:00...">
+                    </div>
+                    <button class="btn-analyze" onclick="runCrossRef()">ANALYZE</button>
+                </div>
+
+                <div id="crossref-results" class="crossref-results" style="display:none;">
+                    <div class="db-label" id="crossref-count-label">RESULTS</div>
+                    <table id="crossref-table">
+                        <thead><tr><th>Log_ID</th><th>Subject</th><th>Observation</th></tr></thead>
+                        <tbody id="crossref-tbody"></tbody>
+                    </table>
+                    <div id="contradiction-alert" class="contradiction-alert" style="display:none;"></div>
+                </div>
+
+                <div id="crossref-empty" class="crossref-empty" style="display:none;">
+                    <div>⬤ No records match your query. Try a different suspect or keyword.</div>
+                </div>
             </div>
         </div>
 
-        <!-- Case File: Suspect Profiles (visible after unlock) -->
-        <div id="case-file-section" style="display:none;" class="db-section case-file-section">
-            <div class="db-label" style="margin-top:20px;">◈ DECRYPTED CASE FILE — SUSPECT PROFILES</div>
-            <div id="suspect-cards" class="suspect-cards"></div>
-            <button class="btn-continue" style="margin: 12px 0 20px;" onclick="closeTablet()">Close Tablet &amp; Investigate</button>
+        <!-- ═══════════════════════════════════
+             TAB 3: FILE ACCUSATION
+             ═══════════════════════════════════ -->
+        <div id="tab-accusation" style="display:none;">
+            <div class="db-section">
+                <div class="db-label" style="margin-bottom:10px;">⚖ INVESTIGATION SUMMARY &amp; ACCUSATION</div>
+                <p class="crossref-desc" id="accusation-gate-msg">Run at least one Cross-Reference query to unlock the Accusation panel.</p>
+
+                <div id="accusation-panel" style="display:none;">
+                    <div class="investigation-summary" id="investigation-summary"></div>
+
+                    <div class="db-label" style="margin:16px 0 10px;">SELECT PRIMARY SUSPECT</div>
+                    <div class="suspect-btn-grid" id="suspect-btn-grid"></div>
+
+                    <div id="accusation-confirm" class="accusation-confirm" style="display:none;"></div>
+
+                    <button class="btn-submit-accusation" id="submit-btn" onclick="submitAccusation()" disabled>
+                        ⚖ SUBMIT ACCUSATION
+                    </button>
+                </div>
+            </div>
         </div>
+
     </main>
+
 
     <!-- Setup/Import Screen -->
     <div id="setup-screen" class="setup-screen">

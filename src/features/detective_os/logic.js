@@ -18,8 +18,14 @@ let DetectiveData = [];
 let isUnlocked = false;
 let isImported = false;
 let currentStep = 1; // 1: Atomicity, 2: Primary Key
-let selectedKeys = new Set(); 
-let originalCellValue = ""; 
+let selectedKeys = new Set();
+let originalCellValue = "";
+
+// Phase 2: Post-Unlock State
+let tabState = 'database';      // 'database' | 'crossref' | 'accusation'
+let crossRefQueryCount = 0;     // gates the accusation tab
+let selectedSuspect = null;     // suspect being accused
+let accusationFiled = false;    // whether accusation was submitted
 
 // Load saved data
 function loadState() {
@@ -236,6 +242,205 @@ function showToast(msg) {
     toast.innerText = msg || "DATABASE UPDATED";
     toast.classList.add("show");
     setTimeout(() => toast.classList.remove("show"), 2000);
+}
+
+// ─────────────────────────────────────────
+// TAB NAVIGATION
+// ─────────────────────────────────────────
+function switchTab(name) {
+    tabState = name;
+    ['database','crossref','accusation'].forEach(t => {
+        const el = document.getElementById('tab-' + t);
+        const btn = document.getElementById('tab-btn-' + t);
+        if (el)  el.style.display  = (t === name) ? 'block' : 'none';
+        if (btn) btn.classList.toggle('active', t === name);
+    });
+    // When switching to accusation, build the panel
+    if (name === 'accusation') buildAccusationPanel();
+}
+
+// ─────────────────────────────────────────
+// CROSS-REFERENCE TOOL
+// ─────────────────────────────────────────
+function runCrossRef() {
+    const suspectFilter  = document.getElementById('crossref-suspect').value.toLowerCase();
+    const keywordFilter  = document.getElementById('crossref-keyword').value.trim().toLowerCase();
+    const tbody          = document.getElementById('crossref-tbody');
+    const resultsDiv     = document.getElementById('crossref-results');
+    const emptyDiv       = document.getElementById('crossref-empty');
+    const countLabel     = document.getElementById('crossref-count-label');
+    const contradDiv     = document.getElementById('contradiction-alert');
+
+    if (!tbody) return;
+
+    // Filter rows
+    const matches = DetectiveData.filter(row => {
+        const subjectMatch  = !suspectFilter  || row.subject.toLowerCase().includes(suspectFilter);
+        const keywordMatch  = !keywordFilter  || row.observation.toLowerCase().includes(keywordFilter);
+        return subjectMatch && keywordMatch;
+    });
+
+    tbody.innerHTML = '';
+    contradDiv.style.display = 'none';
+
+    if (matches.length === 0) {
+        resultsDiv.style.display = 'none';
+        emptyDiv.style.display   = 'block';
+    } else {
+        emptyDiv.style.display   = 'none';
+        resultsDiv.style.display = 'block';
+        countLabel.innerText = `RESULTS — ${matches.length} record(s) found`;
+
+        matches.forEach(row => {
+            const tr = document.createElement('tr');
+            let obs = row.observation;
+            if (obs.includes('ERR_DATA_BLOCK_772')) obs = 'Piano (UNSUCCESSFUL: Butler hid the key?)';
+            const isCritical = obs.includes('Butler hid') || obs.includes('UNSUCCESSFUL');
+            tr.innerHTML = `
+                <td>${row.log_id}</td>
+                <td style="color:var(--accent-amber)">${row.subject}</td>
+                <td style="${isCritical ? 'color:var(--accent-amber);font-weight:bold;' : ''}">${obs}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        // Contradiction detection
+        const contradiction = detectContradictions(suspectFilter, keywordFilter, matches);
+        if (contradiction) {
+            contradDiv.style.display = 'block';
+            contradDiv.innerHTML = contradiction;
+        }
+    }
+
+    // Track query count — gates accusation tab
+    crossRefQueryCount++;
+    localStorage.setItem('Detective_os_queries', crossRefQueryCount);
+    showToast(`QUERY COMPLETE — ${matches.length} record(s)`);
+}
+
+function detectContradictions(suspectFilter, keywordFilter, matches) {
+    const isButlerQuery  = suspectFilter.includes('leduc') || suspectFilter.includes('butler');
+    const isPianoQuery   = keywordFilter.includes('piano');
+    const hasSystemEntry = matches.some(r => r.observation.toLowerCase().includes('unsuccessful') || r.observation.includes('ERR_DATA_BLOCK'));
+
+    if (isPianoQuery && hasSystemEntry) {
+        return `<b>⚠ CONTRADICTION DETECTED:</b> The System Registry records a Piano access attempt that was marked UNSUCCESSFUL. Thomas (Partner) claims he was playing the Piano. Either the Piano was accessed before or after Thomas was there — or one alibi is false.<br><br>Cross-reference Butler's locations: he never mentions the Piano, yet the System Registry entry suggests someone tried to access it.`;
+    }
+    if (isButlerQuery) {
+        const butlerObs = matches.map(r => r.observation.toLowerCase());
+        const mentionsPiano = butlerObs.some(o => o.includes('piano'));
+        if (!mentionsPiano) {
+            return `<b>⚠ NOTE:</b> Leduc (Butler) claims he was in the Hallway, Kitchen, and Dining Room. His alibi does NOT include the Piano — yet the System Registry (Log #005) records a Piano access attempt. Run a Piano query to investigate.`;
+        }
+    }
+    return null;
+}
+
+// ─────────────────────────────────────────
+// ACCUSATION PANEL
+// ─────────────────────────────────────────
+function buildAccusationPanel() {
+    const gateMsg  = document.getElementById('accusation-gate-msg');
+    const panel    = document.getElementById('accusation-panel');
+    const summary  = document.getElementById('investigation-summary');
+    const btnGrid  = document.getElementById('suspect-btn-grid');
+
+    if (crossRefQueryCount === 0) {
+        gateMsg.style.display = 'block';
+        panel.style.display   = 'none';
+        return;
+    }
+
+    gateMsg.style.display = 'none';
+    panel.style.display   = 'block';
+
+    // Build investigation summary (who has contradictions)
+    const suspects = [
+        { name: 'Leduc (Butler)',   key: 'leduc',   contradiction: true,  reason: '1 contradiction — Piano access attempt conflicts with alibi' },
+        { name: 'Beatrix (Nanny)', key: 'beatrix',  contradiction: false, reason: 'Alibi consistent with recovered records' },
+        { name: 'Thomas (Partner)',key: 'thomas',   contradiction: false, reason: 'Present at Piano — but as victim or witness?' },
+        { name: 'Off. Miller',     key: 'miller',   contradiction: false, reason: 'First responder — found body at 22:00' },
+    ];
+
+    summary.innerHTML = suspects.map(s => `
+        <div class="summary-row">
+            <span class="summary-indicator ${s.contradiction ? 'indicator-warn' : 'indicator-ok'}">${s.contradiction ? '!' : '✓'}</span>
+            <span class="summary-name">${s.name}</span>
+            <span class="summary-reason">${s.reason}</span>
+        </div>
+    `).join('');
+
+    // Build suspect selection buttons
+    btnGrid.innerHTML = suspects.map(s => `
+        <button class="suspect-sel-btn ${s.contradiction ? 'btn-flagged' : ''}" 
+                id="sel-${s.key}" 
+                onclick="selectSuspect('${s.name}', '${s.key}')">
+            ${s.name}
+        </button>
+    `).join('');
+
+    // Restore previous selection
+    if (selectedSuspect) {
+        const keyMap = suspects.reduce((acc, s) => { acc[s.name] = s.key; return acc; }, {});
+        const btn = document.getElementById('sel-' + keyMap[selectedSuspect]);
+        if (btn) btn.classList.add('selected');
+        document.getElementById('submit-btn').disabled = false;
+    }
+}
+
+function selectSuspect(name, key) {
+    selectedSuspect = name;
+    // Clear all selections
+    document.querySelectorAll('.suspect-sel-btn').forEach(b => b.classList.remove('selected'));
+    // Highlight chosen
+    const btn = document.getElementById('sel-' + key);
+    if (btn) btn.classList.add('selected');
+    // Enable submit
+    document.getElementById('submit-btn').disabled = false;
+    showToast(`SUSPECT MARKED: ${name}`);
+}
+
+function submitAccusation() {
+    if (!selectedSuspect || accusationFiled) return;
+    accusationFiled = true;
+
+    localStorage.setItem('Detective_os_accusation', selectedSuspect);
+
+    const isCorrect = selectedSuspect.includes('Butler') || selectedSuspect.includes('Leduc');
+
+    // Post to parent game
+    try {
+        if (window !== window.parent) {
+            window.parent.postMessage({
+                type: 'accusation_filed',
+                suspect: selectedSuspect,
+                correct: isCorrect
+            }, '*');
+        }
+    } catch(e) {}
+
+    const confirmDiv = document.getElementById('accusation-confirm');
+    const submitBtn  = document.getElementById('submit-btn');
+    if (submitBtn) submitBtn.disabled = true;
+
+    if (isCorrect) {
+        confirmDiv.className = 'accusation-confirm success';
+        confirmDiv.innerHTML = `
+            <div class="accusation-title">✓ ACCUSATION FILED</div>
+            <div>Primary suspect: <b>${selectedSuspect}</b></div>
+            <div style="margin-top:8px;">The System Registry data confirms a Piano access attempt inconsistent with the Butler's stated alibi. A formal investigation report has been submitted. Return to the investigation and confront Leduc.</div>
+            <button class="btn-continue" style="margin-top:14px;" onclick="closeTablet()">Close Tablet &amp; Confront Suspect</button>
+        `;
+    } else {
+        confirmDiv.className = 'accusation-confirm warn';
+        confirmDiv.innerHTML = `
+            <div class="accusation-title">⚠ ACCUSATION LOGGED</div>
+            <div>Primary suspect: <b>${selectedSuspect}</b></div>
+            <div style="margin-top:8px;">This accusation has been logged, but the forensic data points to a different conclusion. Review the Cross-Reference tab and look for the Piano access contradiction.</div>
+            <button class="btn-continue" style="margin-top:14px;" onclick="closeTablet()">Close Tablet</button>
+        `;
+    }
+    confirmDiv.style.display = 'block';
 }
 
 function validateDB() {
@@ -518,13 +723,24 @@ function showSuccessUI() {
     const success = document.getElementById("success-banner");
     if (success) success.style.display = "flex";
 
+    // Reveal tab bar (the key post-unlock feature)
+    const tabBar = document.getElementById("tab-bar");
+    if (tabBar) tabBar.style.display = "flex";
+
+    // Restore cross-ref query count from localStorage
+    crossRefQueryCount = parseInt(localStorage.getItem('Detective_os_queries') || '0');
+    if (localStorage.getItem('Detective_os_accusation')) {
+        accusationFiled = true;
+        selectedSuspect = localStorage.getItem('Detective_os_accusation');
+    }
+
     // Hide add-row (editing disabled after unlock)
     const addBtn = document.getElementById("add-row-btn");
     if (addBtn) addBtn.style.display = "none";
 
     // Update step label
     const label = document.getElementById("step-label");
-    if (label) label.innerText = "Case File Decrypted — 1NF Compliant";
+    if (label) label.innerText = "Case File Decrypted — Use tabs to analyse";
 
     // Glow the table
     const table = document.getElementById("Detective-db");
@@ -539,43 +755,12 @@ function showSuccessUI() {
         });
     }
 
-    // Build suspect profile cards from decrypted data
-    const caseSection = document.getElementById("case-file-section");
-    const cardsContainer = document.getElementById("suspect-cards");
-    if (caseSection && cardsContainer) {
-        // Group rows by subject
-        const profiles = {};
-        DetectiveData.forEach(row => {
-            const name = row.subject || "Unknown";
-            if (!profiles[name]) profiles[name] = [];
-            let obs = row.observation;
-            if (obs.includes("ERR_DATA_BLOCK_772")) obs = "Piano (UNSUCCESSFUL: Butler hid the key?)";
-            profiles[name].push(obs);
-        });
-
-        cardsContainer.innerHTML = Object.entries(profiles).map(([name, observations]) => {
-            const isCritical = observations.some(o => o.includes("Butler hid"));
-            const isHighlight = name.includes("Butler") || isCritical;
-            const borderColor = isHighlight ? "var(--accent-amber)" : "rgba(255,255,255,0.08)";
-            const glowColor  = isHighlight ? "rgba(200,134,10,0.08)" : "transparent";
-            const observationList = observations.map(o =>
-                `<li style="margin-bottom:4px; ${o.includes('Butler hid') ? 'color:var(--accent-amber);font-weight:bold;' : ''}">${o}</li>`
-            ).join("");
-            return `
-            <div class="suspect-card" style="border-color:${borderColor}; background: ${glowColor};">
-                <div class="suspect-name">${name}</div>
-                <ul class="suspect-observations">${observationList}</ul>
-            </div>`;
-        }).join("");
-
-        caseSection.style.display = "block";
-    }
-
     // Validate feedback auto-update
     const fb = document.getElementById("validate-feedback");
     if (fb) {
         fb.style.display = "block";
         fb.className = "validate-feedback success";
-        fb.innerHTML = "<b>FULLY VALIDATED ✔</b> — Database is 1NF compliant. Composite key confirmed. Case file unlocked.";
+        fb.innerHTML = "<b>FULLY VALIDATED ✔</b> — 1NF compliant. Use CROSS-REFERENCE tab to investigate contradictions.";
     }
 }
+
