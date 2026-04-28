@@ -113,33 +113,45 @@
         </div>
     </div>
 
-    <!-- Guide Modal -->
-    <div id="guide-modal" class="setup-screen" style="display: none; z-index: 2000;">
-        <div class="setup-card" style="max-width: 500px; text-align: left; padding: 0; display: flex; flex-direction: column; max-height: 80vh;">
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid var(--border-color);">
-                <h2 style="color: var(--accent-amber); margin: 0; font-size: 18px;">1NF GUIDE</h2>
-                <button onclick="hideGuide()" style="background: none; border: 1px solid var(--accent-amber); color: var(--accent-amber); cursor: pointer; padding: 4px 12px; border-radius: 4px; font-family: var(--font-mono); font-size: 11px;">BACK</button>
+    <!-- 1NF Normalization Guide Modal -->
+    <div id="guide-modal" class="guide-overlay">
+        <div class="guide-card">
+            <div class="guide-header">
+                <h2>Forensic Database Manual</h2>
+                <button class="exit-btn" onclick="hideGuide()">✕</button>
             </div>
             
-            <div class="modal-body" style="padding: 20px; overflow-y: scroll; flex: 1;">
-                <div style="color: var(--text-primary); font-family: var(--font-mono); font-size: 13px; line-height: 1.6;">
-                    <p><strong style="color: var(--accent-amber);">Goal:</strong> Every cell must be <span style="color: var(--accent-amber);">ATOMIC</span> (contain exactly one piece of information).</p>
-                    <br>
-                    <p><strong>Rule 1: No Lists</strong><br>If a cell contains "Kitchen, Hallway", it violates 1NF. You must split these into two separate rows.</p>
-                    <br>
-                    <p><strong>Rule 2: Unique Identification</strong><br>Once data is atomic, you must identify a combination of columns (Composite Key) that makes every row unique.</p>
-                    <br>
-                    <p><strong>Controls:</strong><br>
-                    - <span style="color: var(--accent-amber);">Tap</span> a corrupted cell to auto-split it.<br>
-                    - <span style="color: var(--accent-amber);">Edit</span> any cell manually by clicking the text.<br>
-                    - <span style="color: var(--accent-amber);">Add Row</span> to manually recreate the structure.</p>
-                    <br>
-                    <p><strong>Why fix it?</strong><br>A normalized database prevents search errors and ensures that the forensic registry can be correctly queried for clues like 'Piano'.</p>
+            <div class="guide-body">
+                <div class="guide-section">
+                    <h3>1st Normal Form (1NF) Rules</h3>
+                    <div class="guide-rule">
+                        1. <b>Atomicity</b>: Each cell must contain exactly ONE value. Lists like "Kitchen, Hallway" are illegal. Split them into separate rows.<br><br>
+                        2. <b>Unique ID</b>: Every row must be uniquely identifiable. Once data is atomic, use <b>Composite Keys</b> (Log_ID + Observation) to secure the registry.
+                    </div>
+                </div>
+
+                <div class="guide-section">
+                    <h3>Field Analysis</h3>
+                    <div class="guide-rule">
+                        - <b>Log_ID</b>: The entry timestamp / serial.<br>
+                        - <b>Subject</b>: Currently encrypted [REDACTED].<br>
+                        - <b>Observation</b>: Witness statements. Often contains non-atomic room lists.
+                    </div>
+                </div>
+
+                <div class="guide-section">
+                    <h3>System Controls</h3>
+                    <div class="guide-controls">
+                        <div class="control-item"><span class="control-key">Enter</span> Save Edit</div>
+                        <div class="control-item"><span class="control-key">Esc</span> Revert Cell</div>
+                        <div class="control-item"><span class="control-key">Click Header</span> Toggle Key</div>
+                        <div class="control-item"><span class="control-key">[DEL]</span> Wipe Row</div>
+                    </div>
                 </div>
             </div>
 
-            <div style="padding: 15px 20px; border-top: 1px solid var(--border-color); text-align: center;">
-                <button class="btn-import" style="width: 100%;" onclick="hideGuide()">CLOSE MANUAL</button>
+            <div class="guide-footer">
+                <button class="btn-close-guide" onclick="hideGuide()">BACK TO DATABASE</button>
             </div>
         </div>
     </div>
