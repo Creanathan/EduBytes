@@ -176,30 +176,57 @@ function showRepairInterface() {
 }
 
 function resetData() {
-    if (confirm("WARNING: This will wipe your current database and re-import from the source. Proceed?")) {
-        // Clear LocalStorage
-        localStorage.removeItem('Detective_os_imported');
-        localStorage.removeItem('Detective_os_data');
-        localStorage.removeItem('Detective_os_unlocked');
-        
-        // Reset In-Memory State
-        DetectiveData = [];
-        isImported = false;
+    // REIMPORT: Does NOT clear the import flag — user keeps their USB item.
+    // Only resets edits back to the original dirty DEFAULT_DATA so they can try again.
+    if (confirm("REIMPORT: This will discard all your edits and restore the original corrupted database from the USB. Proceed?")) {
+
+        // 1. Restore original dirty data (deep copy so DEFAULT_DATA stays pristine)
+        DetectiveData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+
+        // 2. Keep isImported=true but reset puzzle state
+        isImported = true;
         isUnlocked = false;
         currentStep = 1;
-        selectedKeys.clear();
+        selectedKeys = new Set();
 
-        // UI Reset
-        document.getElementById("main-interface").style.display = "none";
-        document.getElementById("crash-screen").style.display = "none";
-        document.getElementById("loading-screen").style.display = "none";
-        document.getElementById("success-banner").style.display = "none";
-        document.getElementById("error-banner").style.display = "flex";
-        document.getElementById("reimport-btn-header").style.display = "none";
-        
-        checkSetup();
+        // 3. Persist the reset data (but keep imported flag alive)
+        localStorage.setItem('Detective_os_data', JSON.stringify(DetectiveData));
+        localStorage.setItem('Detective_os_imported', 'true');
+        localStorage.removeItem('Detective_os_unlocked');
+
+        // 4. Reset UI — show the repair interface directly with fresh data
+        const ids = ["setup-screen", "crash-screen", "loading-screen"];
+        ids.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = "none"; });
+
+        const successBanner = document.getElementById("success-banner");
+        const errorBanner   = document.getElementById("error-banner");
+        const stepLabel     = document.getElementById("step-label");
+        const mainInterface = document.getElementById("main-interface");
+        const table         = document.getElementById("Detective-db");
+
+        if (successBanner) successBanner.style.display = "none";
+        if (errorBanner)   errorBanner.style.display   = "flex";
+        if (stepLabel)     stepLabel.innerText = "Step 1: Achieving Atomicity (1NF)";
+        if (table)         table.classList.remove("success-glow");
+
+        // Reset header styles (remove pulse / key-selected)
+        document.querySelectorAll("#Detective-db th").forEach(th => {
+            th.classList.remove("key-selected");
+            th.style.animation = "";
+            th.onclick = null;
+            th.style.cursor = "";
+            th.innerHTML = th.innerText.replace("🔑 ", "");
+        });
+
+        if (mainInterface) {
+            mainInterface.style.display = "flex";
+            mainInterface.style.animation = "slideDown 0.4s ease-out";
+        }
+
+        document.getElementById("reimport-btn-header").style.display = "block";
+
         renderTable();
-        showToast("DATABASE WIPED");
+        showToast("DATABASE RESTORED — ORIGINAL DATA LOADED");
     }
 }
 
