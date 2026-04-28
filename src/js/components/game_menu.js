@@ -20,22 +20,22 @@
                 top: 14px;
                 right: 16px;
                 z-index: 10000;
-                font-family: 'Segoe UI', sans-serif;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             }
 
             #hamburger-btn {
-                background: rgba(10, 10, 15, 0.82);
+                background: rgba(10, 10, 15, 0.85);
                 border: 1px solid rgba(200, 134, 10, 0.3);
                 border-radius: 8px;
-                width: 40px;
-                height: 40px;
+                width: 44px;
+                height: 44px;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
                 gap: 5px;
                 cursor: pointer;
-                backdrop-filter: blur(8px);
+                backdrop-filter: blur(12px);
                 transition: all 0.25s ease;
                 box-shadow: 0 4px 15px rgba(0,0,0,0.4);
             }
@@ -49,6 +49,7 @@
             }
 
             #hamburger-btn:hover {
+                background: #1e1e28;
                 border-color: rgba(200, 134, 10, 0.7);
                 box-shadow: 0 0 14px rgba(200, 134, 10, 0.25);
             }
@@ -61,8 +62,8 @@
                 position: absolute;
                 top: calc(100% + 12px);
                 right: 0;
-                background: rgba(10, 10, 16, 0.95);
-                border: 1px solid rgba(200, 134, 10, 0.25);
+                background: rgba(10, 10, 15, 0.95);
+                border: 1px solid rgba(200, 134, 10, 0.3);
                 border-radius: 12px;
                 padding: 10px;
                 width: 220px;
@@ -89,14 +90,18 @@
                 display: flex;
                 align-items: center;
                 gap: 12px;
-                color: rgba(232, 220, 200, 0.8);
+                color: #e8dcc8;
                 font-size: 14px;
                 letter-spacing: 0.5px;
+                background: transparent;
+                border: none;
+                width: 100%;
+                text-align: left;
             }
 
             .menu-item:hover {
-                background: rgba(200, 134, 10, 0.12);
-                color: #fff;
+                background: #1e1e28;
+                color: #ffffff;
             }
 
             .menu-item i { font-size: 16px; color: rgba(200, 134, 10, 0.7); }
@@ -104,7 +109,8 @@
             /* Audio Sub-panel */
             .audio-sub-panel {
                 padding: 10px;
-                background: rgba(0, 0, 0, 0.3);
+                background: #0a0a0f;
+                border: 1px solid rgba(200, 134, 10, 0.2);
                 border-radius: 8px;
                 margin-top: 5px;
                 display: none;
@@ -118,14 +124,14 @@
                 font-size: 10px;
                 letter-spacing: 1px;
                 text-transform: uppercase;
-                color: rgba(200, 134, 10, 0.5);
+                color: rgba(200, 134, 10, 0.7);
             }
 
             #volume-slider {
                 -webkit-appearance: none;
                 width: 100%;
                 height: 4px;
-                background: rgba(255,255,255,0.1);
+                background: #1e1e28;
                 border-radius: 4px;
                 outline: none;
             }
@@ -133,21 +139,25 @@
             #volume-slider::-webkit-slider-thumb {
                 -webkit-appearance: none;
                 width: 14px; height: 14px;
-                background: rgba(200, 134, 10, 1);
+                background: #c8860a;
                 border-radius: 50%;
                 cursor: pointer;
             }
 
             .mute-btn {
-                background: rgba(200, 134, 10, 0.1);
+                background: #1e1e28;
                 border: 1px solid rgba(200, 134, 10, 0.3);
-                color: rgba(200, 134, 10, 0.9);
+                color: #c8860a;
                 padding: 6px;
                 border-radius: 6px;
                 font-size: 12px;
                 text-align: center;
                 cursor: pointer;
                 transition: all 0.2s;
+            }
+            
+            .mute-btn:hover {
+                background: rgba(200, 134, 10, 0.1);
             }
 
             .mute-btn.active {
@@ -177,7 +187,7 @@
                     <div class="mute-btn" id="mute-btn">Mute Audio</div>
                 </div>
                 <button type="button" class="menu-item" id="main-menu-btn">
-                    <span>\uD83C\uDFE0 Main Menu</span>
+                    <span>\uD83C\uDFE0 Home</span>
                 </button>
             </div>
         `;

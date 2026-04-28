@@ -33,6 +33,10 @@
                 <span class="btn-icon">☰</span>
                 Chapters
             </button>
+            <button class="btn-noir" id="btn-restart-main" onclick="confirmRestartMain()" style="display: none; color: #e74c3c; border-color: rgba(231, 76, 60, 0.3);">
+                <span class="btn-icon">↻</span>
+                Restart
+            </button>
         </div>
 
         <p class="start-footer">Chapter 1 — Now Available</p>
@@ -190,8 +194,22 @@
             }
         });
 
+        function confirmRestartMain() {
+            if(confirm("Are you sure you want to restart? All your progress in the investigation will be lost forever.")) {
+                localStorage.removeItem('edubytes_gamestate');
+                localStorage.removeItem('edubytes_inventory');
+                renderChapters();
+                checkRestartButton();
+            }
+        }
+
+        function checkRestartButton() {
+            document.getElementById('btn-restart-main').style.display = hasSaveData() ? 'flex' : 'none';
+        }
+
         /* ── Init ──────────────────────────────── */
         renderChapters();
+        checkRestartButton();
     </script>
 </body>
 </html>
