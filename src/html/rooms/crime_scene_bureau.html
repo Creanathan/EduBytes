@@ -16,9 +16,9 @@
         }
     </style>
 </head>
-<body class="bg-dark text-white">
+<body>
 
-    <div class="room-background" id="room-bg"></div>
+    <div class="room-background"></div>
     
     <div class="interactable-layer">
         <div id="usb-hitbox" class="clickable-object" onclick="pickupUSB()" title="Take USB Stick"></div>
@@ -42,7 +42,7 @@
     <script src="../../js/components/dynamic_loading.js"></script>
     <script>
         function updateRoomState() {
-            const bg = document.getElementById('room-bg');
+            const bg = document.querySelector('.room-background');
             const hitbox = document.getElementById('usb-hitbox');
             
             console.log("[Bureau] Updating room state. Has USB:", Inventory.hasItem('usb_stick'));

@@ -35,7 +35,7 @@ window.ResponsiveScaler = {
             ambient.style.backgroundImage = bgImgUrl;
         }
 
-        const bgImg = bgImgUrl.slice(4, -1).replace(/"/g, "");
+        const bgImg = bgImgUrl.replace(/^url\(['"]?/, '').replace(/['"]?\)$/, '');
         if (!bgImg || bgImg === 'none') return;
 
         const img = new Image();
