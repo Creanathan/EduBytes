@@ -20,4 +20,6 @@
 - [x] Create `PROJECT_STRUCTURE.md` and `DEVELOPER_GUIDE.md`
 - [x] Upgrade to Next-Gen Performance Engine (Speculation Rules + Image Prefetching)
 - [x] Implement 'Resume' feature on start screen
+- [x] Reorganize UI: Moved Tablet into Inventory; Simplified Hamburger Menu
+- [x] Implement Gated Narrative: Hide critical clues behind 1NF puzzle decryption
 - [ ] Finalize deployment tests

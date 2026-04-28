@@ -43,7 +43,10 @@ This document standardizes the interaction logic and state requirements for Chap
 *   **Body**: Investigate Amelia’s physical state (Discoloration clue).
 *   **Broken Glass**: Evidence of the residue.
 *   **USB Stick**: Item required to import data into the Detective Tablet.
-*   **Detective Tablet**: Personal forensic tool. Requires `usb_stick` or `ledger` to begin normalization.
+*   **Detective Tablet**: Personal forensic tool.
+    *   **Gated Logic**: Upon import, the database appears 'Crashed'.
+    *   **1NF Puzzle**: Player must fix atomicity to decrypt the logs.
+    *   **The Reveal**: Successfully reaching 1NF compliance decrypts the entry: *"Piano (UNSUCCESSFUL: Butler hid the key?)"*.
 
 ---
 

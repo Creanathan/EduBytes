@@ -35,6 +35,7 @@ To ensure a smooth experience on hosted servers:
 - **Requirement**: Players must possess either the `ledger` or `usb_stick` in their `Inventory` to trigger the "Manual Import" sequence.
 - **Flags**: `Detective_os_imported` (Boolean) and `Detective_os_data` (JSON) track the state of the tablet database.
 - **Integration**: The tablet is launched via `window.TabletWidget.toggle()`, which is called by the Inventory UI.
+- **Mangled Data Pattern**: Use the `ERR_DATA_BLOCK_772` string in `DEFAULT_DATA` to mask clues. The `renderTable` function in `logic.js` handles the dynamic decryption once `isUnlocked` is true.
 
 ---
 
