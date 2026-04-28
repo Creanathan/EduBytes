@@ -140,7 +140,8 @@ function startImport() {
 
 function completeImport() {
     isImported = true;
-    DetectiveData = [...DEFAULT_DATA]; 
+    // Deep copy to ensure DEFAULT_DATA remains pristine for future resets
+    DetectiveData = JSON.parse(JSON.stringify(DEFAULT_DATA)); 
     localStorage.setItem('Detective_os_imported', 'true');
     localStorage.setItem('Detective_os_data', JSON.stringify(DetectiveData));
 
