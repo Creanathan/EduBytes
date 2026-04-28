@@ -45,24 +45,39 @@
             const bg = document.getElementById('room-bg');
             const hitbox = document.getElementById('usb-hitbox');
             
+            console.log("[Bureau] Updating room state. Has USB:", Inventory.hasItem('usb_stick'));
+
             if (Inventory.hasItem('usb_stick')) {
                 bg.classList.add('no-usb');
+                // Fallback direct style setting for GitHub Pages persistence
+                bg.style.backgroundImage = "url('../../assets/rooms/crime_scene_bureau.png')";
+                
                 if (hitbox) hitbox.style.display = 'none';
                 
+                console.log("[Bureau] USB found logic applied.");
+
                 // Force sync to update ambient background
                 setTimeout(() => { 
-                    if(window.ResponsiveScaler) window.ResponsiveScaler.sync(); 
-                }, 100);
+                    if(window.ResponsiveScaler) {
+                        console.log("[Bureau] Syncing ambient background...");
+                        window.ResponsiveScaler.sync(); 
+                    }
+                }, 150);
             } else {
                 bg.classList.remove('no-usb');
                 if (hitbox) hitbox.style.display = 'block';
             }
         }
 
-        document.addEventListener('DOMContentLoaded', updateRoomState);
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("[Bureau] DOMContentLoaded fired.");
+            updateRoomState();
+        });
 
         function pickupUSB() {
+            console.log("[Bureau] pickupUSB() clicked.");
             if (Inventory.addItem('usb_stick')) {
+                console.log("[Bureau] Item added successfully.");
                 updateRoomState();
 
                 if (window.showDialog) {
@@ -72,6 +87,8 @@
                         { speaker: "Detective", text: "Ow, let's look at the tablet" }
                     ]);
                 }
+            } else {
+                console.warn("[Bureau] addItem failed - item already in inventory.");
             }
         }
     </script>
