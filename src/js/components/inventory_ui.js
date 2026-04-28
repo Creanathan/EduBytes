@@ -213,7 +213,8 @@
         const ITEM_MAP = {
             'nursery_key': { name: 'Nursery Key', icon: '🔑' },
             'bloody_glass': { name: 'Glass Shard', icon: '💎' },
-            'ledger': { name: 'Missing Ledger', icon: '📓' }
+            'ledger': { name: 'Missing Ledger', icon: '📓' },
+            'usb_stick': { name: 'USB Flash Drive', icon: '💾' }
         };
 
         function renderInventory() {

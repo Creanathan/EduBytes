@@ -19,12 +19,21 @@
         }
         #bureau-container {
             position: relative;
-            width: 90vw; height: 50.625vw; /* 16:9 aspect ratio */
-            max-height: 90vh; max-width: 160vh;
-            background-size: contain;
+            width: 75vw; height: 42.1875vw; /* 16:9 aspect ratio */
+            max-height: 75vh; max-width: 133.33vh;
+            background-size: cover; /* Use cover to fill the bordered box */
             background-repeat: no-repeat;
             background-position: center;
             background-image: url('../../assets/rooms/crime_scene_bureau_USB.png');
+            border: 2px solid rgba(200, 134, 10, 0.5); /* Vintage Gold */
+            border-radius: 12px;
+            box-shadow: 0 15px 50px rgba(0,0,0,1), 0 0 20px rgba(200, 134, 10, 0.15);
+            background-color: #0a0a0f;
+            animation: modal-zoom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes modal-zoom {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
         #usb-hitbox {
             position: absolute;
@@ -53,7 +62,7 @@
         <div id="bureau-container">
             <div id="usb-hitbox" class="clickable-object" onclick="pickupUSB()" title="Take USB Stick"></div>
         </div>
-        <button class="btn btn-outline-light position-absolute top-0 end-0 m-4" style="z-index: 5001;" onclick="closeBureau()">← Back to Room</button>
+        <button class="btn position-absolute top-0 end-0 m-4" style="z-index: 5001; background: #0a0a0f; border: 1px solid rgba(200, 134, 10, 0.5); color: #e8dcc8; transition: all 0.2s;" onmouseover="this.style.background='#1e1e28'; this.style.color='#fff'" onmouseout="this.style.background='#0a0a0f'; this.style.color='#e8dcc8'" onclick="closeBureau()">← Back to Room</button>
     </div>
 
     <script src="../../js/services/gamestate.js"></script>
