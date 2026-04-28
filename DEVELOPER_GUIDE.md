@@ -30,10 +30,11 @@ To ensure a smooth experience on hosted servers:
 - The `DialogEngine` in `dialog.js` is optimized to process pipe-separated actions (e.g., `setFlag:X|goTo:Y`). 
 - **Rule**: Keep interaction strings clean. Avoid complex logic inside the `action` strings; handle that in `gamestate.js`.
 
-### Tablet & Normalization Demo
-- The Tablet starts in an "Empty" state.
+### Tablet & Normalization Feature
+- The Tablet is located **inside the Evidence Bag (Inventory)**.
 - **Requirement**: Players must possess either the `ledger` or `usb_stick` in their `Inventory` to trigger the "Manual Import" sequence.
-- **Flags**: `police_os_imported` (Boolean) and `police_os_data` (JSON) track the state of the tablet database.
+- **Flags**: `Detective_os_imported` (Boolean) and `Detective_os_data` (JSON) track the state of the tablet database.
+- **Integration**: The tablet is launched via `window.TabletWidget.toggle()`, which is called by the Inventory UI.
 
 ---
 

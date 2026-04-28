@@ -247,11 +247,11 @@
             </div>
         `;
 
-        widget.addEventListener('click', () => {
-            showTabletOverlay();
-        });
+        // widget.addEventListener('click', () => {
+        //     showTabletOverlay();
+        // });
 
-        document.body.appendChild(widget);
+        // document.body.appendChild(widget);
 
         // Update notification state
         updateNotification();

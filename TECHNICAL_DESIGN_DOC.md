@@ -54,3 +54,12 @@ This document standardizes the interaction logic and state requirements for Chap
 *   **Up (Hallway)**: Crime Scene (Locked by `crime_scene_unlocked`).
 *   **Down (Hallway)**: Outside.
 *   **Up (Living Room)**: Nanny's Room (Locked by `has_nannys_key`).
+ 
+ ---
+ 
+ ## 4. UI Design Standards
+ 
+ - **Hamburger Menu**: Dedicated to system-level navigation (Home) and settings (Audio). Investigative tools are excluded to maintain immersion.
+ - **Evidence Bag (Inventory)**: The primary investigative hub located in the bottom-right.
+ - **Detective Tablet**: Integrated as a permanent "Tool" inside the Evidence Bag.
+ - **Interaction Model**: Physical items collected in the world (USB, Ledger) are imported through the Tablet interface within the Inventory.

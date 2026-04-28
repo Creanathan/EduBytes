@@ -29,8 +29,8 @@ Modular sub-applications and standalone puzzle interfaces.
 - `/components`: UI and interaction logic.
     - `dialog.js`: The narrative engine.
     - `movement.js`: Navigation button logic.
-    - `tablet_widget.js`: In-game tablet UI.
-    - `game_menu.js`: Main escape/settings menu.
+    - `tablet_widget.js`: Tablet UI (accessed via Inventory).
+    - `game_menu.js`: System settings (Audio, Home).
 - `/data`: Static data stores.
     - `dialogs.js`: The master interaction database.
 

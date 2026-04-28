@@ -11,7 +11,7 @@
             #inventory-widget {
                 position: fixed;
                 bottom: 24px;
-                right: 88px; /* Offset from tablet widget */
+                right: 24px;
                 z-index: 9000;
                 cursor: pointer;
                 user-select: none;
@@ -120,11 +120,17 @@
                 margin-bottom: 8px;
                 border: 1px solid transparent;
                 transition: all 0.2s;
+                cursor: default;
             }
 
-            .inventory-item:hover {
-                background: rgba(200, 134, 10, 0.05);
-                border-color: rgba(200, 134, 10, 0.2);
+            .inventory-item.interactive {
+                cursor: pointer;
+                border-color: rgba(200, 134, 10, 0.1);
+            }
+
+            .inventory-item.interactive:hover {
+                background: rgba(200, 134, 10, 0.1);
+                border-color: rgba(200, 134, 10, 0.4);
             }
 
             .item-thumb {
@@ -142,6 +148,14 @@
                 font-size: 13px;
                 color: rgba(255,255,255,0.8);
                 font-family: 'Segoe UI', sans-serif;
+            }
+
+            .special-item-label {
+                font-size: 9px;
+                color: #c8860a;
+                font-weight: bold;
+                margin-bottom: 8px;
+                opacity: 0.7;
             }
 
             .empty-msg {
@@ -171,7 +185,7 @@
         drawer.innerHTML = `
             <div class="drawer-header">
                 <span>Evidence Bag</span>
-                <span style="opacity: 0.5; font-size: 9px;">Investigation Ledger</span>
+                <span style="opacity: 0.5; font-size: 9px;">Investigation Tools</span>
             </div>
             <div class="drawer-content" id="inventory-items-container">
                 <!-- Items injected here -->
@@ -217,14 +231,31 @@
             'usb_stick': { name: 'USB Flash Drive', icon: '💾' }
         };
 
+        function openTablet() {
+            closeDrawer();
+            if (window.TabletWidget && window.TabletWidget.toggle) {
+                window.TabletWidget.toggle();
+            }
+        }
+
         function renderInventory() {
             const container = document.getElementById('inventory-items-container');
             const items = (window.Inventory ? window.Inventory.getItems() : []).filter(i => typeof i === 'string');
             
+            // Start with permanent tools
+            let html = `
+                <div class="special-item-label">TOOLS</div>
+                <div class="inventory-item interactive" onclick="window.openTabletFromInv()">
+                    <div class="item-thumb">📱</div>
+                    <div class="item-name">Detective Tablet</div>
+                </div>
+                <div class="special-item-label" style="margin-top: 16px;">COLLECTED EVIDENCE</div>
+            `;
+
             if (items.length === 0) {
-                container.innerHTML = '<div class="empty-msg">No evidence collected yet.</div>';
+                html += '<div class="empty-msg">No evidence collected yet.</div>';
             } else {
-                container.innerHTML = items.map(id => {
+                html += items.map(id => {
                     const data = ITEM_MAP[id] || { name: id.replace(/_/g, ' '), icon: '🔎' };
                     return `
                         <div class="inventory-item">
@@ -235,6 +266,8 @@
                 }).join('');
             }
 
+            container.innerHTML = html;
+
             const badge = document.getElementById('inventory-count-badge');
             const count = items.length;
             badge.textContent = count;
@@ -244,6 +277,9 @@
         // Listen for updates
         window.addEventListener('inventoryUpdate', renderInventory);
         renderInventory(); // Initial render
+
+        // Expose openTablet for the HTML onclick
+        window.openTabletFromInv = openTablet;
     }
 
     if (document.readyState === 'loading') {
@@ -251,16 +287,16 @@
     } else {
         buildInventoryUI();
     }
-    // Expose for external access (e.g., Hamburger Menu)
+    // Expose for external access
     window.InventoryUI = {
         toggle: () => {
             const drawer = document.getElementById('inventory-drawer');
             if (drawer) {
-                // Manually trigger the transition logic since buildInventoryUI is local
                 if (drawer.classList.contains('active')) {
                     drawer.classList.remove('active');
                     setTimeout(() => drawer.style.display = 'none', 300);
                 } else {
+                    renderInventory();
                     drawer.style.display = 'block';
                     setTimeout(() => drawer.classList.add('active'), 10);
                 }

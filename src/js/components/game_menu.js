@@ -186,12 +186,6 @@
                     <input type="range" id="volume-slider" min="0" max="1" step="0.05">
                     <div class="mute-btn" id="mute-btn">Mute Audio</div>
                 </div>
-                <button type="button" class="menu-item" id="menu-tablet-btn">
-                    <span>\uD83D\uDDA5 Detective Tablet</span>
-                </button>
-                <button type="button" class="menu-item" id="menu-inventory-btn">
-                    <span>\uD83D\uDCBC Inventory</span>
-                </button>
                 <button type="button" class="menu-item" id="main-menu-btn">
                     <span>\uD83C\uDFE0 Home</span>
                 </button>
@@ -221,26 +215,6 @@
 
             if (menuItem.id === 'menu-audio-toggle') {
                 audioPanel.classList.toggle('open');
-                return;
-            }
-
-            if (menuItem.id === 'menu-tablet-btn') {
-                closeMenu();
-                if (window.TabletWidget && window.TabletWidget.toggle) {
-                    window.TabletWidget.toggle();
-                } else {
-                    console.error("TabletWidget not loaded.");
-                }
-                return;
-            }
-
-            if (menuItem.id === 'menu-inventory-btn') {
-                closeMenu();
-                if (window.InventoryUI && window.InventoryUI.toggle) {
-                    window.InventoryUI.toggle();
-                } else {
-                    console.error("InventoryUI not loaded.");
-                }
                 return;
             }
 
