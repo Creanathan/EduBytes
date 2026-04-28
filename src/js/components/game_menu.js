@@ -4,7 +4,7 @@
  * Features:
  * - Hamburger icon with dropdown animation.
  * - Unified Audio Settings (Volume & Mute) persistent across rooms.
- * - Access to Tablet/Police OS.
+ * - Access to Tablet/Detective OS.
  */
 
 (function () {
@@ -187,7 +187,7 @@
                     <div class="mute-btn" id="mute-btn">Mute Audio</div>
                 </div>
                 <button type="button" class="menu-item" id="menu-tablet-btn">
-                    <span>\uD83D\uDDA5 Police Tablet</span>
+                    <span>\uD83D\uDDA5 Detective Tablet</span>
                 </button>
                 <button type="button" class="menu-item" id="menu-inventory-btn">
                     <span>\uD83D\uDCBC Inventory</span>

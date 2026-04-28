@@ -131,7 +131,7 @@ const DIALOGS = {
                 condition: "GameState.hasFlag('crime_scene_visited')",
                 speaker: "Jeanne-Paul Leduc (Butler)",
                 lines: [
-                    "I hope you found what you were looking for. Mr. Souvellier in the living room might have the police tablet if they left it behind."
+                    "I hope you found what you were looking for. Mr. Souvellier in the living room might have the Detective Tablet if they left it behind."
                 ],
                 options: [
                     { label: "I'll check.", action: "exit" }

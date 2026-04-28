@@ -1,5 +1,5 @@
 /**
- * Police OS Logic - 1NF Normalization Puzzle
+ * Detective OS Logic - 1NF Normalization Puzzle
  * Developer: Detective Louis Dekoning (In-Lore)
  */
 
@@ -62,7 +62,7 @@ function checkSetup() {
     } else {
         icon.innerText = "\uD83D\uDCE1";
         title.innerText = "No Data Source Detected";
-        text.innerText = "Police OS is online but local registries are empty. Please obtain a data source (Ledger or USB) to begin analysis.";
+        text.innerText = "Detective OS is online but local registries are empty. Please obtain a data source (Ledger or USB) to begin analysis.";
         importBtn.style.display = "none";
     }
 }
