@@ -63,6 +63,28 @@ Your most powerful tool. It transforms raw, messy data into actionable intellige
 
 ---
 
+## 3. Quick Completion Checklist (TL;DR)
+If you just want the steps to finish Chapter One:
+
+1.  **Outside**: Click **Proceed**.
+2.  **Hallway**: Click **Leduc** (Butler) -> "In the flesh" -> "I will."
+3.  **Living Room** (Left): Click **Thomas** -> "I'll get it."
+4.  **Hallway**: Click **Leduc** -> "Please." (Unlocks Up button).
+5.  **Crime Scene** (Up): Click the **Desk** in the background.
+6.  **Bureau**: Click the **USB Stick** (Adds to inventory).
+7.  **Tablet**: Open Tablet (Briefcase) -> **Initialize Scan**.
+8.  **Repair**:
+    - Click **Log #001** and **Log #002** (Observations column) to split them.
+    - Click **ID** and **Observation Evidence** headers (they turn gold).
+    - Click **Validate**.
+9.  **Analysis**: Click **🔗 (Sidebar)** -> Select **Beatrix** -> Click **Analyze**.
+10. **Report**: Click **⚖️ (Sidebar)** -> Select **Beatrix** -> Click **Submit**.
+11. **Nursery** (Hallway Right): Click **Beatrix** -> Confront her -> Click **Take Key**.
+12. **Living Room**: Click the **Middle Door** -> Click **Enter**.
+13. **Nanny's Room**: Examine the **Bed**, **Dresser**, and **Window**.
+
+---
+
 ## 🛠 Troubleshooting
 - **Stuck on Normalization?** Look at the **Manual (📖)** in the tablet. It will glow if you fail a validation check, providing hints on 1NF rules.
 - **Door Won't Open?** Ensure you have both filed the accusation in the tablet **and** talked to Beatrix in the Nursery to physically receive the key.
