@@ -38,7 +38,12 @@ This script runs in the foreground and manages the *order* in which assets are p
 ### How it works:
 1.  **Priority Mapping**: The script knows which rooms are connected to the current one.
 2.  **High-Priority Load**: It creates hidden `Image` objects for the backgrounds of the adjacent rooms.
-3.  **Low-Priority Load**: Once the adjacent rooms are cached, it slowly downloads the rest of the chapter's assets in the background.
+3.  **Global Asset Scan**: It proactively caches assets in the following sub-directories:
+    - `src/assets/rooms/` (Backgrounds)
+    - `src/assets/images/characters/` (Portraits)
+    - `src/assets/cutscenes/` (Narrative images)
+    - `src/assets/images/ui/` (Icons & Logos)
+4.  **Low-Priority Load**: Once the adjacent rooms are cached, it slowly downloads the rest of the chapter's assets in the background.
 
 ### Path Normalization:
 The preloader will include a standardized path resolver to handle the difference between root access (`index.html`) and room access (`src/rooms/`).

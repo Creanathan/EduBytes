@@ -19,21 +19,25 @@ We will create or update `src/js/components/dynamic_loading.js` with a global `A
 3. **Trigger Point**: Preloading starts on `index.html` (Main Menu) or `outside.html` (Intro) immediately after the current page's critical assets are ready.
 4. **Path Correction**: Standardizing paths to avoid 404s (e.g., fixing the `crime_scene_bureau_USB.png` reference).
 
-### Pseudo-code:
-```javascript
-const ASSETS = [
-    'outside.png',
-    'hallway_main.png',
-    'living_room_closed.png',
-    'living_room_open.png',
-    // ... all others
-];
+const ASSETS = {
+    rooms: [
+        'outside.png', 'hallway_main.png', 'living_room_closed.png', 
+        'living_room_open.png', 'nursery.png', 'crime_scene_main.png', 
+        'crime_scene_bureau_USB.png', 'nannys_room_main.png'
+    ],
+    characters: [
+        'beatrix.png', 'butler.png', 'detective.png', 'thomas.png'
+    ],
+    cutscenes: [
+        'cutscene_auto(1).png', 'cutscene_auto(2).png'
+    ],
+    ui: ['logo.png']
+};
 
 function aggressivePreload() {
-    ASSETS.forEach(file => {
-        const img = new Image();
-        img.src = `../assets/rooms/${file}`;
-    });
+    // Priority 1: Current room characters & UI
+    // Priority 2: Adjacent rooms
+    // Priority 3: All others
 }
 ```
 
