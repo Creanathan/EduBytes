@@ -192,5 +192,15 @@
         updateUIState();
     </script>
     <script src="./src/js/components/dynamic_loading.js"></script>
+    <script>
+        // --- Service Worker Registration ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('[ServiceWorker] Registered successfully:', reg.scope))
+                    .catch(err => console.log('[ServiceWorker] Registration failed:', err));
+            });
+        }
+    </script>
 </body>
 </html>

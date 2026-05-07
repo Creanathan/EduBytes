@@ -1,90 +1,117 @@
 /**
- * Performance Engine — EduBytes
- * Handles pre-rendering, image pre-caching, and asset optimization
- * for a faster, "app-like" experience when hosted online.
+ * Performance Engine — EduBytes (v5.0)
+ * Handles aggressive pre-caching and asset optimization.
  */
 
 (function() {
-    const PATH_CONFIG = {
+    // 1. Full Asset Registry
+    const ASSETS = {
+        rooms: [
+            'outside.png', 
+            'hallway_main.png', 
+            'living_room_closed.png', 
+            'living_room_open.png', 
+            'nursery.png', 
+            'crime_scene_main.png', 
+            'crime_scene_bureau_USB.png', // Fixed filename
+            'nannys_room_main.png'
+        ],
+        characters: [
+            'beatrix.png', 
+            'butler.png', 
+            'butler_sprite.png', 
+            'detective.png', 
+            'thomas.png'
+        ],
+        cutscenes: [
+            'cutscene_auto(1).png', 
+            'cutscene_auto(2).png'
+        ],
+        ui: [
+            'logo.png', 
+            'logo.svg'
+        ]
+    };
+
+    // 2. Connection Logic (for Priority Preloading)
+    const CONNECTIONS = {
         'index.html': ['outside.html'],
         'outside.html': ['hallway.html'],
-        'hallway.html': ['outside.html', 'living_room.html', 'crime_scene.html'],
+        'hallway.html': ['outside.html', 'living_room.html', 'crime_scene.html', 'nursery.html'],
         'living_room.html': ['hallway.html', 'nursery.html', 'nannys_room.html'],
-        'nursery.html': ['living_room.html'],
+        'nursery.html': ['living_room.html', 'hallway.html'],
         'crime_scene.html': ['hallway.html', 'crime_scene_bureau.html'],
         'crime_scene_bureau.html': ['crime_scene.html'],
         'nannys_room.html': ['living_room.html']
     };
 
-    let currentFile = window.location.pathname.split('/').pop();
-    if (!currentFile || !currentFile.endsWith('.html')) {
-        currentFile = 'index.html';
+    const ROOM_TO_IMAGE = {
+        'outside.html': 'outside.png',
+        'hallway.html': 'hallway_main.png',
+        'living_room.html': 'living_room_closed.png',
+        'nursery.html': 'nursery.png',
+        'crime_scene.html': 'crime_scene_main.png',
+        'crime_scene_bureau.html': 'crime_scene_bureau_USB.png',
+        'nannys_room.html': 'nannys_room_main.png'
+    };
+
+    // 3. Helper: Path Normalization
+    function getBasePath() {
+        const path = window.location.pathname;
+        const isSubfolder = path.includes('/src/rooms/') || (path.endsWith('.html') && path.includes('/rooms/'));
+        return isSubfolder ? '../' : './src/';
     }
 
-    const connections = PATH_CONFIG[currentFile] || [];
+    const BASE_PATH = getBasePath();
+    const ASSET_ROOT = BASE_PATH + 'assets/';
 
-    // 1. Modern Speculation Rules (Chrome 108+)
-    // Pre-renders the HTML of connected rooms in the background
-    if (HTMLScriptElement.supports && HTMLScriptElement.supports('speculationrules')) {
-        const specRulesUrls = connections.map(room => {
-            if (currentFile === 'index.html') {
-                return './src/rooms/' + room;
-            }
-            return room;
+    // 4. Aggressive Preloader Engine
+    function preloadImage(url) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(url);
+            img.onerror = () => reject(url);
+            img.src = url;
         });
-        const specRules = {
-            "prerender": [{
-                "source": "list",
-                "urls": specRulesUrls
-            }]
-        };
-        const script = document.createElement('script');
-        script.type = 'speculationrules';
-        script.textContent = JSON.stringify(specRules);
-        document.head.appendChild(script);
     }
 
-    // 2. Image Pre-caching (Legacy support & Non-Chrome)
-    // Pre-loads the background images of adjacent rooms
-    function prefetchImages() {
-        // Map of room files to their primary background images
-        const roomAssets = {
-            'outside.html': '/src/assets/rooms/outside.png',
-            'hallway.html': '/src/assets/rooms/hallway_main.png',
-            'living_room.html': '/src/assets/rooms/living_room_closed.png',
-            'nursery.html': '/src/assets/rooms/nursery.png',
-            'crime_scene.html': '/src/assets/rooms/crime_scene_main.png',
-            'crime_scene_bureau.html': '/src/assets/rooms/crime_scene_bureau.png',
-            'nannys_room.html': '/src/assets/rooms/nannys_room_main.png'
-        };
+    async function startPerformanceEngine() {
+        let currentFile = window.location.pathname.split('/').pop() || 'index.html';
+        const connectedRooms = CONNECTIONS[currentFile] || [];
+        
+        console.log(`[Performance] Engine started for ${currentFile}. BasePath: ${BASE_PATH}`);
 
-        connections.forEach(room => {
-            const assetPath = roomAssets[room];
-            if (assetPath) {
-                const link = document.createElement('link');
-                link.rel = 'prefetch';
-                link.as = 'image';
-                
-                // Construct relative path
-                if (currentFile === 'index.html') {
-                    link.href = '.' + assetPath; // e.g. ./src/assets/rooms/outside.png
-                } else {
-                    link.href = '..' + assetPath.replace('/src', ''); // e.g. ../assets/rooms/outside.png
+        // --- Priority 1: High (Immediate Neighbors) ---
+        const highPriority = connectedRooms.map(room => ROOM_TO_IMAGE[room]).filter(img => img);
+        for (const imgName of highPriority) {
+            preloadImage(`${ASSET_ROOT}rooms/${imgName}`).catch(() => {});
+        }
+
+        // --- Priority 2: Medium (Characters & UI) ---
+        // These are small enough to load quickly and are used in dialogues
+        ASSETS.characters.forEach(img => preloadImage(`${ASSET_ROOT}images/characters/${img}`).catch(() => {}));
+        ASSETS.ui.forEach(img => preloadImage(`${ASSET_ROOT}images/ui/${img}`).catch(() => {}));
+
+        // --- Priority 3: Low (Everything else) ---
+        // Stagger these to avoid blocking
+        setTimeout(() => {
+            ASSETS.rooms.forEach(img => {
+                if (!highPriority.includes(img)) {
+                    preloadImage(`${ASSET_ROOT}rooms/${img}`).catch(() => {});
                 }
-
-                document.head.appendChild(link);
-            }
-        });
+            });
+            ASSETS.cutscenes.forEach(img => preloadImage(`${ASSET_ROOT}cutscenes/${img}`).catch(() => {}));
+        }, 2000);
     }
 
-    // Delay pre-fetching to prioritize current page load
+    // Initialize after load
     if (document.readyState === 'complete') {
-        prefetchImages();
+        startPerformanceEngine();
     } else {
-        window.addEventListener('load', prefetchImages);
+        window.addEventListener('load', startPerformanceEngine);
     }
 
-    // 3. Asset Modernization (Auto-apply lazy loading to non-critical images)
+    // 5. Asset Modernization (Auto-apply lazy loading to non-background images)
     document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('img:not(.critical)').forEach(img => {
             if (!img.hasAttribute('loading')) {
@@ -93,5 +120,4 @@
         });
     });
 
-    console.log(`[Performance] Optimized for ${currentFile}. Connections prefetched: ${connections.length}`);
 })();
