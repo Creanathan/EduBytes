@@ -70,11 +70,7 @@
     }
 
     function handleDoorClick() {
-        if (window.Inventory && window.Inventory.hasItem('nannys_key')) {
-            showInteraction('door_nannys_room_unlocked');
-        } else {
-            showInteraction('door_nannys_room');
-        }
+        showInteraction('door_nannys_room');
     }
 </script>
 
