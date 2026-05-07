@@ -37,17 +37,34 @@ function aggressivePreload() {
 }
 ```
 
-## 3. Best Practice: Image Compression
-To truly optimize for GitHub Pages, images should be compressed.
+## 3. Critical Validation: Feasibility & Risks
 
-- **Target Format**: **WebP** (offers ~80% reduction in file size with no quality loss).
-- **Target Size**: Under 800KB per background.
-- **Impact**: Reduces total game load from 45MB to ~5MB, making transitions instantaneous even on slower connections.
+### A. The "Multi-Page" Bottleneck
+The biggest risk to the current plan is that our game consists of **separate HTML files**. 
+- When you navigate from `outside.html` to `hallway.html`, the entire JavaScript state is wiped.
+- Any `new Image()` objects we created to "force" a download are destroyed.
+- **The Success Factor**: We are 100% dependent on the browser's disk cache. If the browser decides 45MB of images is too much to keep in memory, it will purge them, and the "slowness" will return.
 
-## 4. Implementation Steps
-1. [ ] **Correction**: Update `dynamic_loading.js` with the correct filenames found on disk.
-2. [ ] **Logic**: Replace `rel="prefetch"` with the `new Image()` preloader.
-3. [ ] **Scope**: Ensure the preloader runs as a global service so it doesn't restart on every page.
+### B. Bandwidth "Hogging"
+If we start loading 45MB of images as soon as the user hits the main menu:
+- On a slow connection, the actual game assets (like the first room's background) might be delayed because the preloader is stealing the bandwidth.
+
+## 4. Better Method: Service Workers (Persistent Cache)
+For a multi-page game, the "pro" method is a **Service Worker**.
+- **Persistent**: A Service Worker lives in the background even when you switch pages.
+- **Cache Storage API**: It allows us to explicitly store the 5MB images in a dedicated cache that is *not* easily purged by the browser.
+- **Interception**: It can intercept the request for `hallway_main.png` and serve it instantly from the local cache, making the room switch feel like an app.
+
+## 5. The "Critical Must-Have": WebP Compression
+Regardless of the code method (JS Preload or Service Worker), **45MB is too heavy**.
+- **Current PNGs**: ~5MB each.
+- **Target WebP**: ~400KB - 600KB each.
+- **Result**: Even without a preloader, a 500KB image loads in milliseconds on most connections. **This is the single most important fix for "perceived speed."**
+
+## 6. Revised Implementation Strategy
+1. **Priority 1**: Convert all 5MB PNGs to WebP (80-90% size reduction).
+2. **Priority 2**: Update `dynamic_loading.js` to use an aggressive preloader but *prioritize* the next logical room.
+3. **Priority 3 (Optional)**: Implement a basic Service Worker if Level 1 and 2 aren't enough.
 
 ---
-*Status: Planned (Pending Implementation)*
+*Status: Validated & Critically Reviewed*
