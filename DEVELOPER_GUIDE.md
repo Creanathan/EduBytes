@@ -18,10 +18,8 @@ Git remote configuration (local machine):
 | Remote | URL | Status |
 | :--- | :--- | :--- |
 | `origin` | `https://github.com/Creanathan/EduBytes.git` | ✅ **Active — use this** |
-| `samuel-old` | `https://github.com/SamuelWeyts/EduBytes.git` | ❌ Retired — do not push here |
-| `public` | `https://github.com/Creanathan/EduBytes-Samuel-public.git` | 📦 Public mirror |
 
-> **Note**: The `SamuelWeyts/EduBytes` repository is archived and no longer maintained. It was the original development fork. All pushes must now go to `Creanathan/EduBytes` (the `origin` remote).
+> **Note**: This is the primary repository for all development. All pushes must target the `origin` remote.
 
 ### GitHub Pages Deployment
 GitHub Pages typically updates **within 1–5 minutes** after a push to `main`. You can monitor the build status under:
