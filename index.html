@@ -95,16 +95,31 @@
         /* ── Render chapter list ───────────────── */
         function renderChapters() {
             const list = document.getElementById('chapter-list');
+            const isCh1Completed = window.GameState && window.GameState.hasFlag('chapter_1_completed');
+            
+            // Update data based on state
+            if (isCh1Completed) {
+                chapters[0].completed = true;
+                chapters[1].available = true;
+            }
+
             list.innerHTML = chapters.map(ch => {
                 const cls   = ch.available ? 'available' : 'locked';
-                const status = ch.available
+                const isCompleted = ch.completed;
+                
+                let status = ch.available
                     ? '<span class="chapter-status playable">▶ Play Now</span>'
                     : '<span class="chapter-status coming-soon">Coming Soon</span>';
+                
+                if (isCompleted) {
+                    status = '<span class="chapter-status completed">✅ COMPLETED</span>';
+                }
+
                 const lock  = ch.available ? '' : '<span class="chapter-lock">🔒</span>';
                 const click = ch.available ? `onclick="selectChapter(${ch.num})"` : '';
 
                 return `
-                    <div class="chapter-item ${cls}" ${click}>
+                    <div class="chapter-item ${cls} ${isCompleted ? 'chapter-completed' : ''}" ${click}>
                         <div class="chapter-num">${ch.num}</div>
                         <div class="chapter-info">
                             <div class="chapter-title">Chapter ${ch.num}: ${ch.title}</div>

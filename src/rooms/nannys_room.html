@@ -32,10 +32,43 @@
     <!-- Back to Living Room — per Interacties met locaties.docx -->
     <button class="btn btn-primary ui-button position-fixed bottom-0 start-50 translate-middle-x mb-3" id="btn-bottom" onclick="goToLocation('living_room.html')"></button>
 
+    <div id="chapter-completion-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #fff; font-family: 'Segoe UI', sans-serif; opacity: 0; transition: opacity 2s ease;">
+        <h2 style="font-size: 14px; text-transform: uppercase; letter-spacing: 4px; color: #c8860a; margin-bottom: 10px;">Investigation Update</h2>
+        <h1 style="font-size: 48px; margin-bottom: 30px; font-weight: bold; letter-spacing: 2px;">CHAPTER ONE COMPLETED</h1>
+        <div style="width: 100px; height: 2px; background: #c8860a; margin-bottom: 40px;"></div>
+        <p style="font-size: 18px; color: #aaa; max-width: 500px; line-height: 1.6; margin-bottom: 50px;">
+            You have successfully navigated the first layer of lies at the Dégrasse Mansion. The truth remains buried, but the path is now open.
+        </p>
+        <button class="btn btn-outline-warning" style="padding: 12px 40px; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; border-radius: 0; border: 1px solid #c8860a; color: #c8860a;" onclick="finishChapter()">Return to Home</button>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            if (window.GameState) window.GameState.setFlag('nannys_room_visited');
+            if (window.GameState) {
+                window.GameState.setFlag('nannys_room_visited');
+                
+                // Trigger Chapter Completion after a short delay
+                setTimeout(() => {
+                    showChapterCompletion();
+                }, 1500);
+            }
         });
+
+        function showChapterCompletion() {
+            const overlay = document.getElementById('chapter-completion-overlay');
+            overlay.style.display = 'flex';
+            // Force reflow
+            overlay.offsetHeight;
+            overlay.style.opacity = '1';
+            
+            if (window.GameState) {
+                window.GameState.setFlag('chapter_1_completed');
+            }
+        }
+
+        function finishChapter() {
+            window.location.href = '../../index.html';
+        }
     </script>
     <script src="../js/core/global_init.js"></script>
     <script src="../js/core/gamestate.js"></script>
