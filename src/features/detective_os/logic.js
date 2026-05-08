@@ -7,7 +7,7 @@ const DEFAULT_DATA = [
     { log_id: "#002", subject: "Beatrix (Nanny)", observation: "Nursery, Laundry. Claims she was washing the cradle linens." },
     { log_id: "#003", subject: "Thomas (Partner)", observation: "Living Room. Claims he was playing piano to calm his nerves." },
     { log_id: "#004", subject: "Off. Miller", observation: "Crime Scene. Found the body at 22:00." },
-    { log_id: "#005", subject: "System Registry", observation: "Piano (ERR_DATA_BLOCK_772: HIDDEN_RESTRICTED)" }
+    { log_id: "#005", subject: "Beatrix (Nanny)", observation: "Piano (LOG_DATA_CORRUPTED: 0x882)" }
 ];
 
 const PROFILES = {
@@ -116,6 +116,12 @@ function renderTable() {
     tbody.innerHTML = "";
     updateIntegrityMeter();
 
+    // Show/Hide Reimport button
+    const reimportBtn = document.getElementById("reimport-btn-main");
+    if (reimportBtn) {
+        reimportBtn.style.display = (isImported && !isUnlocked) ? "block" : "none";
+    }
+
     if (currentStep === 2 && !isUnlocked) {
         thead.querySelectorAll("th").forEach(th => {
             const col = th.innerText.toLowerCase();
@@ -129,7 +135,9 @@ function renderTable() {
     DetectiveData.forEach((row, index) => {
         const tr = document.createElement("tr");
         let obs = row.observation;
-        if (obs.includes("ERR_DATA_BLOCK") && isUnlocked) obs = "Piano. Silver Key missing. Subject B. Lemur nearby.";
+        if (row.log_id === "#005" && isUnlocked) {
+            obs = "Piano. Silver Key missing. Subject B. Lemur identified nearby.";
+        }
         const isEditable = !isUnlocked;
         tr.innerHTML = `
             <td contenteditable="${isEditable}" onblur="editCell(${index}, 'log_id', this.innerText)">${row.log_id}</td>
@@ -223,7 +231,13 @@ function runCrossRef() {
     const alert = document.getElementById('contradiction-alert');
     if (keyword.includes('piano') && matches.some(r => r.observation.includes('B. Lemur'))) {
         alert.style.display = "block";
-        alert.innerHTML = `<div style="background:rgba(255, 62, 62, 0.05); border:1px solid var(--accent-error); padding:10px; border-radius:10px; font-size:10px; color:var(--accent-error);"><strong>⚠ CONTRADICTION:</strong> Log #005 identifies Beatrix Lémur at the Piano. Alibi #002 conflicts.</div>`;
+        alert.innerHTML = `
+            <div style="background:rgba(255, 62, 62, 0.05); border:1px solid var(--accent-error); padding:10px; border-radius:10px; font-size:10px; color:var(--accent-error);">
+                <strong>⚠ CONTRADICTION:</strong> Log #005 identifies Beatrix Lémur at the Piano. Alibi #002 conflicts.
+                <div style="margin-top: 8px; color: var(--accent-gold); border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px;">
+                    💡 <strong>NEXT STEP:</strong> Use the ⚖️ <strong>Report</strong> tab to finalize your accusation.
+                </div>
+            </div>`;
     } else alert.style.display = "none";
     crossRefQueryCount++;
     localStorage.setItem('Detective_os_queries', crossRefQueryCount);
@@ -249,8 +263,37 @@ function selectSuspect(id, btn) {
 function submitAccusation() {
     const isCorrect = (selectedSuspect === 'beatrix');
     if (window !== window.parent) window.parent.postMessage({ type: 'accusation_filed', suspect: selectedSuspect, correct: isCorrect }, '*');
-    alert(isCorrect ? "REPORT SUBMITTED." : "REPORT FILED. Evidence weak.");
+    alert(isCorrect 
+        ? "✅ REPORT SUBMITTED.\n\nEvidence for 'Alibi Contradiction' has been logged. You are now prepared to confront Beatrix Lémur in the Living Room." 
+        : "⚠️ REPORT FILED.\n\nNote: The forensic data does not strongly support this accusation. You can still confront the suspect, but your case may be weak.");
     closeTablet();
+}
+
+function reimportData() {
+    if (confirm("REIMPORT ORIGINAL USB DATA?\n\nThis will reset your current normalization progress.")) {
+        DetectiveData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+        isUnlocked = false;
+        currentStep = 1;
+        selectedKeys = new Set();
+        crossRefQueryCount = 0;
+        localStorage.setItem('Detective_os_data', JSON.stringify(DetectiveData));
+        localStorage.setItem('Detective_os_unlocked', 'false');
+        localStorage.setItem('Detective_os_queries', '0');
+        
+        // Refresh UI
+        checkSetup();
+        updateIntegrityMeter();
+        renderTable();
+        
+        // Reset Navigation
+        document.getElementById("nav-crossref").classList.remove("nav-reveal");
+        document.getElementById("nav-accusation").classList.remove("nav-reveal");
+        switchTab('database');
+        
+        // Clear feedback
+        const fb = document.getElementById("validate-feedback");
+        if (fb) fb.style.display = "none";
+    }
 }
 
 function resetData() { if (confirm("RESET SYSTEM?")) { localStorage.clear(); location.reload(); } }

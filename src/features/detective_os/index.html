@@ -63,10 +63,11 @@
                     <div class="glass-panel">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                             <h2 style="font-size: 11px; text-transform: uppercase; color: var(--text-high);">Registry Search_Log_001</h2>
-                            <div style="display: flex; gap: 8px;">
-                                <input type="text" id="db-search" placeholder="Filter..." style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-subtle); padding: 6px 12px; border-radius: 6px; color: #fff; font-family: var(--font-code); font-size: 10px; width: 120px;">
-                                <button class="action-btn" style="padding: 6px 10px; font-size: 9px;" onclick="addRow()">+ ROW</button>
-                            </div>
+                             <div style="display: flex; gap: 8px;">
+                                 <input type="text" id="db-search" placeholder="Filter..." style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-subtle); padding: 6px 12px; border-radius: 6px; color: #fff; font-family: var(--font-code); font-size: 10px; width: 120px;">
+                                 <button id="reimport-btn-main" class="action-btn" style="padding: 6px 10px; font-size: 9px; background: rgba(200, 134, 10, 0.2); border-color: var(--accent-gold); display: none;" onclick="reimportData()">↻ REIMPORT</button>
+                                 <button class="action-btn" style="padding: 6px 10px; font-size: 9px;" onclick="addRow()">+ ROW</button>
+                             </div>
                         </div>
 
                         <div id="validate-feedback" style="margin-bottom: 12px; font-family: var(--font-code); font-size: 10px; display: none;"></div>

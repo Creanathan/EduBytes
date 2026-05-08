@@ -109,11 +109,8 @@
                 updateRoomState();
 
                 // Play narrative confirmation
-                if (window.DialogEngine) {
-                    window.DialogEngine.playSequence([
-                        { speaker: "Detective", text: "Got it. This encrypted drive should be the key to the registry data." },
-                        { speaker: "Detective", text: "I'll need to import this into my tablet to see the actual logs." }
-                    ]);
+                if (window.showInteraction) {
+                    window.showInteraction('collected_usb');
                 } else if (window.showDialog) {
                     window.showDialog("You collected the USB Stick. Use the Detective Tablet to import the data.");
                 }

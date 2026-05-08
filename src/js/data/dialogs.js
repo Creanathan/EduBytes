@@ -66,6 +66,16 @@ const DIALOGS = {
     // ────────────────────────────────────────────────
     interactions: {
 
+        // ── Inventory / Progression Guidance ──
+        collected_usb: {
+            speaker: "Det. Louis Dekoning",
+            lines: [
+                "You have collected the USB stick.",
+                "You should put in the evidence submission in the tablet and confront the nanny."
+            ],
+            options: [{ label: "Understood", action: "exit" }]
+        },
+
         // ── Jeanne-Paul Leduc (Butler) ──
         leduc: [
             {
@@ -149,16 +159,52 @@ const DIALOGS = {
             {
                 // Confrontation about the alibi contradiction
                 condition: "GameState.hasFlag('accusation_filed_beatrix') && !GameState.hasFlag('has_nannys_key')",
-                speaker: "Beatrix Lémur",
-                lines: [
-                    "The police logs? You've... corrected them? How very thorough of you, detective.",
-                    "My alibi? I already told you, I was in the Nursery and Laundry all night. Log #002 is quite clear on that.",
-                    "Wait... Log #005? A sensor identified me at the Piano? That's... impossible. There must be a glitch in your machine.",
-                    "Fine. I was there. I took the key because I didn't trust the police to 'find' it properly. They would only use it to harass me.",
-                    "If you want to search my room so badly, here it is. But you won't find anything but the loyalty of a lifelong servant."
-                ],
-                options: [
-                    { label: "Take Key", action: "setFlag:has_nannys_key|addItem:nannys_key|exit" }
+                steps: [
+                    {
+                        speaker: "Det. Louis Dekoning",
+                        lines: [
+                            "Madame Lémur, I've spent the afternoon reconciling the house registries. There’s a ghost in the machine that doesn't quite match your story."
+                        ],
+                        options: [{ label: "Show Evidence", action: "exit" }]
+                    },
+                    {
+                        speaker: "Beatrix Lémur",
+                        lines: [
+                            "You've been busy with your little machine, haven't you? Scrubbing away at the truth until it fits your narrative.",
+                            "My alibi is ironclad. I was with the children. Log #002 says so, and I say so. What more do you need?"
+                        ],
+                        options: [{ label: "Confront with Log #005", action: "exit" }]
+                    },
+                    {
+                        speaker: "Det. Louis Dekoning",
+                        lines: [
+                            "I need consistency, Beatrix. Log #002 places you in the Nursery, but the sensor at the Grand Piano—Log #005—identified you specifically at 22:15."
+                        ],
+                        options: [{ label: "...", action: "exit" }]
+                    },
+                    {
+                        speaker: "Beatrix Lémur",
+                        lines: [
+                            "The piano sensor? I... I didn't think that old relic was still operational.",
+                            "Fine! I was there. I saw the Silver Key glinting in the moonlight and I took it. Not to steal, Detective, but to protect!",
+                            "The police are vultures. They would have used that key to lock me away and leave the triplets motherless AND nanny-less."
+                        ],
+                        options: [{ label: "Hand over the key.", action: "exit" }]
+                    },
+                    {
+                        speaker: "Det. Louis Dekoning",
+                        lines: [
+                            "Your 'protection' has only complicated a murder investigation. The key, Beatrix. Now."
+                        ],
+                        options: [{ label: "Take Key", action: "setFlag:has_nannys_key|addItem:nannys_key|exit" }]
+                    },
+                    {
+                        speaker: "Beatrix Lémur",
+                        lines: [
+                            "Take it. Search my room. Turn my life upside down if you must. But know this: I am the only one in this house who truly cared for her."
+                        ],
+                        options: [{ label: "Close", action: "close" }]
+                    }
                 ]
             },
             {
